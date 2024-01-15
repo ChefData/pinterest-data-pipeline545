@@ -3,30 +3,42 @@
 ## Table of Contents
 
 - [Description of the project](#description-of-the-project)
-    - [What the project does](#what-the-project-does)
-    - [Aim of the project](#aim-of-the-project)
-    - [Lessons learned](#lessons-learned)
+  - [What the project does](#what-the-project-does)
+  - [Aim of the project](#aim-of-the-project)
+  - [Lessons learned](#lessons-learned)
 - [Installation instructions](#installation-instructions)
 - [Usage instructions](#usage-instructions)
-    - [Environment Setup](#environment-setup)
-    - [AWS Configuration](#aws-configuration)
-    - [Credential Setup](#credential-setup)
-    - [Project Navigation](#project-navigation)
+  - [Environment Setup](#environment-setup)
+  - [AWS Configuration](#aws-configuration)
+  - [Credential Setup](#credential-setup)
+  - [Project Navigation](#project-navigation)
 - [Classes and Methods](#classes-and-methods)
 - [File structure of the project](#file-structure-of-the-project)
 - [Technologies Used](#technologies-used)
 - [Troubleshooting](#troubleshooting)
 - [License information](#license-information)
 
-In this project, we'll use different services running in the AWS cloud.
+## Description of the project
 
-The user_posting_emulation.py contains the login credentials for a RDS database, which contains three tables with data resembling data received by the Pinterest API when a POST request is made by a user uploading data to Pinterest:
+A data pipeline is a systematic and automated process for the efficient and reliable movement, transformation, and management of data from one point to another within a computing environment. It plays a crucial role in modern data-driven organizations by enabling the seamless flow of information across various stages of data processing.
+
+Pinterest uses the AWS Data Pipeline to process and move data between different AWS compute and storage services, as well as on-premises data sources, at specified intervals.
+
+At Pinterest, there are two primary categories of data sets: online service logs and database dumps. The pipeline for collecting service logs is usually composed of three stages: log collection, log transportation, and log persistence.
+
+Pinterest crunches billions of data points every day to decide how to provide more value to their users. This project has been designed to create a similar system using AWS Cloud infrastructure.
+
+The project uses a RDS database containing three tables resembling data received by the Pinterest API when a POST request is made by a user uploading data to Pinterest:
 
 - pinterest_data contains data about posts being updated to Pinterest
 - geolocation_data contains data about the geolocation of each Pinterest post found in pinterest_data
 - user_data contains data about the user that has uploaded each post found in pinterest_data
 
-Run the provided script and print out pin_result, geo_result and user_result. These each represent one entry in their corresponding table.
+### What the project does
+
+### Aim of the project
+
+### Lessons learned
 
 ## Batch Processing: Configure the EC2 Kafka client
 
@@ -477,9 +489,25 @@ This code uses the HTTP REST API provided by Confluent REST Proxy to consume mes
 
 
 
+## File structure of the project
 
+The project is built around three classes and the Python files needed to download the data:
 
-
+```bash
+    .
+    ├── AiCore-Project-PDP-env.yaml
+    ├── user_posting_emulation.py
+    ├── README.md
+    ├── classes
+    │   ├── __init__.py
+    │   ├── api_communicator.py
+    │   ├── aws_db_connector.py
+    │   └── database_connector.py
+    ├── <UserId>-key-pair.pem
+    ├── creds.yaml
+    ├── .gitignore
+    └── .env
+```
 
 ## Technologies Used
 
@@ -491,6 +519,33 @@ This code uses the HTTP REST API provided by Confluent REST Proxy to consume mes
 - Virtual Private Cloud (VPC) is a virtual network infrastructure that allows you to provision a logically isolated section of the AWS cloud where you can launch AWS resources.
 - IAM Roles are a fundamental component of Identity and Access Management (IAM) in cloud computing environments, designed to manage and control access to various AWS resources and services. An IAM Role is an entity with a set of permissions that determine what actions can be performed on specific resources.
 - Amazon API Gateway is an AWS service that allows the creation, maintenance and securing of scalable REST, HTTP and Websocket APIs. APIs can be created to access AWS services and other web services or data stored in the AWS Cloud.
+
+## Tools Used
+
+- Visual Studio Code: Code editor used for development.
+- Python: Programming language used for the game logic.
+
+urllib3.util
+logging
+json
+time
+signal
+random
+
+- a
+  - PyYAML: YAML parser and emitter for Python
+  - sqlalchemy: Open-source SQL toolkit and object-relational mapper
+  - requests: Python HTTP library allows users to send HTTP requests to a specified URL.
+  - boto3: Boto3 is an AWS SDK for Python that enables developers to integrate their Python applications, libraries, or scripts with AWS services such as Amazon S3, Amazon EC2, and Amazon DynamoDB
+  - Decouple: helps you to organize your settings so that you can change parameters without having to redeploy your app.
+- Git: Version control system for tracking changes in the project.
+- GitHub: Hosting platform for version control and collaboration.
+- Amazon Web Services: cloud computing services
+- AiCore: Educational programme for tasks and milestones used for development progression
+
+## Troubleshooting
+
+If you encounter any issues during the installation or setup process, please open an issue in the repository.
 
 ## License information
 
