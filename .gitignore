@@ -1,8 +1,11 @@
 # Directories
 do_not_track/
 __pycache__/
+Consumer/
 
 # File Extensions
 *.env
+*.pem
+*.yaml
 
 # Individual Files
