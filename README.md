@@ -57,6 +57,11 @@ THe aim of this project is as follows:
 > - VPC Endpoint to S3
 > - Security rules for the EC2 instance to allow communication with the MSK cluster
 > - REST type API with regional endpoint
+>
+> The following were already configured in the Databricks account:
+>
+> - The Databricks account was granted full access to S3, so a new Access Key and Secret Access Key was not created for Databricks.
+> - The credentials were already uploaded to Databricks.
 
 ## Installation instructions
 
@@ -182,7 +187,8 @@ Follow these instructions to set up and install the project on your local machin
         - x
     - PLAINTEXT_APACHE_ZOOKEEPER_CONNECTION_STRING
         - x
-
+    - CONSUMER_GROUP
+        - x
 
 
 
@@ -226,7 +232,7 @@ Follow these instructions to set up and install the project on your local machin
     deployment_stage = <DEPLOYMENT_STAGE>
 
     # Consumer Group
-    consumer_group = students
+    consumer_group = <CONSUMER_GROUP>
 
     # Bootstrap Servers
     bootstrap_servers = <BOOTSTRAP_SERVER_STRING>
@@ -676,6 +682,8 @@ In terminal on your local machine:
     python user_posting_emulation.py
     ```
 
+### Checking Data has been sent with a Kafka consumer
+
 To check data has been sent to the cluster, run a Kafka consumer (one per topic).
 
 On the client EC2 machine:
@@ -686,21 +694,21 @@ On the client EC2 machine:
 
     ```bash
     cd /home/ec2-user/kafka_2.12-2.8.1/bin
-    ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_STRING> --consumer.config client.properties --group <consumer_group> --topic <USER_ID>.pin --from-beginning
+    ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_STRING> --consumer.config client.properties --group <CONSUMER_GROUP> --topic <USER_ID>.pin --from-beginning
     ```
 
   - For the geolocation data
 
     ```bash
     cd /home/ec2-user/kafka_2.12-2.8.1/bin
-    ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_STRING> --consumer.config client.properties --group <consumer_group> --topic <USER_ID>.geo --from-beginning
+    ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_STRING> --consumer.config client.properties --group <CONSUMER_GROUP> --topic <USER_ID>.geo --from-beginning
     ```
 
   - For the user data
 
     ```bash
     cd /home/ec2-user/kafka_2.12-2.8.1/bin
-    ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_STRING> --consumer.config client.properties --group <consumer_group> --topic <USER_ID>.user --from-beginning
+    ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_STRING> --consumer.config client.properties --group <CONSUMER_GROUP> --topic <USER_ID>.user --from-beginning
     ```
 
 If everything has been set up correctly, the Kafka consumers will show messages being consumed.
@@ -710,10 +718,127 @@ The following is a explation of the additional configuration:
 - --consumer.config; with the path to a consumer properties file containing security settings, is required as the SSL is being used for authentication
 - --from-beginning; option is used to start consuming from the beginning of the topic. To see only new messages, omit this option.
 
+### Checking Data has been ingested and stored in the S3 bucket
+
+If the data has successfully been ingested through Kafka, it will be present in the S3 bucket as follows:
+
+![Alt text](README_Images/S3_bucket_topics.png)
+![Alt text](README_Images/S3_bucket_pin.png)
+![Alt text](README_Images/S3_bucket_geo.png)
+![Alt text](README_Images/S3_bucket_user.png)
+
+Notice the folder organization (e.g topics/<USER_ID>.pin/partition=0/) that your connector creates in the bucket
+
+## Batch Processing: Databricks
+
+To clean and query the batch data, you will need to read this data from your S3 bucket into Databricks.
+To do this, you will need to mount the desired S3 bucket to the Databricks account.
+The file you are looking for is called authentication_credentials.csv.
+
+When reading in the JSONs from S3, make sure to include the complete path to the JSON objects, as seen in your S3 bucket (e.g topics/<USER_ID>.pin/partition=0/).
+
+You should create three different DataFrames:
+
+df_pin for the Pinterest post data
+df_geo for the geolocation data
+df_user for the user data.
+
+To read data from an Amazon S3 bucket into Databricks, the following steps need to be taken:
+
+### Create AWS Access Key and Secret Access Key for Databricks
+
+> [!Note]
+>
+> During this project the Databricks account was already granted full access to S3, so a new Access Key and Secret Access Key was not required for Databricks.
+> The following are the steps required to create a new Access Key and Secret Access Key if they were required.
+
+In the 'IAM' console:
+
+- Select 'Users' under the 'Access management' section on the left side of the console
+- Click on the 'Create user' button.
+- On the 'Specify user details' page, enter the desired 'User name' and click 'Next'.
+- On the 'Set permissions' page, select the 'Attach policies directly' choice.
+- In the search bar type AmazonS3FullAccess and check the box. (This will allow full access to S3, meaning Databricks will be able to connect to any existing buckets on the AWS account.)
+- Skip the next sections until you reach the Review page. Here select the 'Create user' button.
+- Now that you have created the IAM User, you will need to assign it a programmatic access key:
+  - In the 'Security Credentials' tab select 'Create Access Key'
+  - On the subsequent page select 'Command Line Interface (CLI)'
+  - Navigate to the bottom of the page click 'I understand'
+  - On the next page, give the key-pair a description and select 'Create Access Key'
+  - Click the 'Download.csv file' button to download the credentials.
+
+### Upload credential csv file to Databricks
+
+> [!Note]
+>
+> During this project the credentials file was already uploaded to Databricks.
+> The following are the steps required to upload a credentials file if required.
+
+In the 'Databricks' UI:
+
+- Click the 'Catalog' icon and then click '+ Add' --> 'Add data' button.
+- Click on 'Create or modify table' and then drop the credentials file downloaded from AWS.
+- Once the file has been successfully uploaded, click 'Create table' to finalise the process.
+- The credentials will be uploaded in the following location: dbfs:/user/hive/warehouse/
+
+### Mount an AWS S3 bucket to Databricks
+
+In the 'Databricks' UI:
+
+- Select the '+ New' icon and then select 'Notebook'.
+- Mount the S3 bucket to Databricks.
+
+We will need to import the following libraries first:
+
+```bash
+# pyspark functions
+from pyspark.sql.functions import *
+# URL processing
+import urllib
+```
+
+Now let's read the table containing the AWS keys to Databricks using the code below:
+
+```bash
+# Define the path to the Delta table
+delta_table_path = "dbfs:/user/hive/warehouse/authentication_credentials"
+# Read the Delta table to a Spark DataFrame
+aws_keys_df = spark.read.format("delta").load(delta_table_path)
+```
+
+We can extract the access key and secret access key from the spark dataframe created above.
+The secret access key will be encoded using urllib.parse.quote for security purposes. 
+safe="" means that every character will be encoded.
+
+```bash
+# Get the AWS access key and secret key from the spark dataframe
+ACCESS_KEY = aws_keys_df.select('Access key ID').collect()[0]['Access key ID']
+SECRET_KEY = aws_keys_df.select('Secret access key').collect()[0]['Secret access key']
+# Encode the secrete key
+ENCODED_SECRET_KEY = urllib.parse.quote(string=SECRET_KEY, safe="")
+```
+
+We can now mount the S3 bucket by passing in the S3 URL and the desired mount name to dbutils.fs.mount().
+Make sure to replace the AWS_S3_BUCKET with the name of the bucket you have your data stored into, and MOUNT_NAME with the desired name inside your Databricks workspace.
+
+```bash
+# AWS S3 bucket name
+AWS_S3_BUCKET = "bucket_name"
+# Mount name for the bucket
+MOUNT_NAME = "/mnt/mount_name"
+# Source url
+SOURCE_URL = "s3n://{0}:{1}@{2}".format(ACCESS_KEY, ENCODED_SECRET_KEY, AWS_S3_BUCKET)
+# Mount the drive
+dbutils.fs.mount(SOURCE_URL, MOUNT_NAME)
+```
+
+The code above will return True if the bucket was mounted successfully. You will only need to mount the bucket once, and then you should be able to access it from Databricks at any time.
+
+### Reading JSON files from mounted S3 bucket
 
 
-Step 3:
-Check if data is getting stored in the S3 bucket. Notice the folder organization (e.g topics/<USER_ID>.pin/partition=0/) that your connector creates in the bucket.
+
+
 
 
 
