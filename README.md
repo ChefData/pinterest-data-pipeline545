@@ -731,17 +731,13 @@ Notice the folder organization (e.g topics/<USER_ID>.pin/partition=0/) that your
 
 ## Batch Processing: Databricks
 
-To clean and query the batch data, you will need to read this data from your S3 bucket into Databricks.
-To do this, you will need to mount the desired S3 bucket to the Databricks account.
-The file you are looking for is called authentication_credentials.csv.
+Databricks provides a unified analytics platform. This platform is closely tied to Apache Spark, an open-source, distributed computing system that can process large amounts of data quickly. Databricks provides an optimised and managed Spark environment.
 
-When reading in the JSONs from S3, make sure to include the complete path to the JSON objects, as seen in your S3 bucket (e.g topics/<USER_ID>.pin/partition=0/).
+To clean and query the data from the three Kafka topics, the S3 bucket will be mounted to a Databricks account. Within Databricks three DataFrames will be created to hold this data:
 
-You should create three different DataFrames:
-
-df_pin for the Pinterest post data
-df_geo for the geolocation data
-df_user for the user data.
+- df_pin for the Pinterest post data
+- df_geo for the geolocation data
+- df_user for the user data.
 
 To read data from an Amazon S3 bucket into Databricks, the following steps need to be taken:
 
@@ -772,6 +768,7 @@ In the 'IAM' console:
 > [!Note]
 >
 > During this project the credentials file was already uploaded to Databricks.
+> This file has been named authentication_credentials.csv.
 > The following are the steps required to upload a credentials file if required.
 
 In the 'Databricks' UI:
@@ -780,64 +777,29 @@ In the 'Databricks' UI:
 - Click on 'Create or modify table' and then drop the credentials file downloaded from AWS.
 - Once the file has been successfully uploaded, click 'Create table' to finalise the process.
 - The credentials will be uploaded in the following location: dbfs:/user/hive/warehouse/
+- Now that the access keys are available from within the Databricks file store, they can be used in Databricks notebooks.
 
 ### Mount an AWS S3 bucket to Databricks
 
-In the 'Databricks' UI:
+> [!Note]
+>
+> This project uses mounting to connect to the AWS S3 bucket.
+>
+> Databricks no longer recommends mounting external data locations to Databricks Filesystem.
+> Databricks recommends migrating away from using mounts, and instead managing data governance with Unity Catalog
+> Databricks recommends using Unity Catalog to configure access to S3 and volumes for direct interaction with files.
 
-- Select the '+ New' icon and then select 'Notebook'.
-- Mount the S3 bucket to Databricks.
+Databricks enables users to mount cloud object storage to the Databricks File System (DBFS) to simplify data access patterns.
 
-We will need to import the following libraries first:
+Databricks mounts create a link between a workspace and cloud object storage, which enables interaction with cloud object storage using familiar file paths relative to the Databricks file system. Mounts work by creating a local alias under the /mnt directory that stores the following information:
 
-```bash
-# pyspark functions
-from pyspark.sql.functions import *
-# URL processing
-import urllib
-```
-
-Now let's read the table containing the AWS keys to Databricks using the code below:
-
-```bash
-# Define the path to the Delta table
-delta_table_path = "dbfs:/user/hive/warehouse/authentication_credentials"
-# Read the Delta table to a Spark DataFrame
-aws_keys_df = spark.read.format("delta").load(delta_table_path)
-```
-
-We can extract the access key and secret access key from the spark dataframe created above.
-The secret access key will be encoded using urllib.parse.quote for security purposes. 
-safe="" means that every character will be encoded.
-
-```bash
-# Get the AWS access key and secret key from the spark dataframe
-ACCESS_KEY = aws_keys_df.select('Access key ID').collect()[0]['Access key ID']
-SECRET_KEY = aws_keys_df.select('Secret access key').collect()[0]['Secret access key']
-# Encode the secrete key
-ENCODED_SECRET_KEY = urllib.parse.quote(string=SECRET_KEY, safe="")
-```
-
-We can now mount the S3 bucket by passing in the S3 URL and the desired mount name to dbutils.fs.mount().
-Make sure to replace the AWS_S3_BUCKET with the name of the bucket you have your data stored into, and MOUNT_NAME with the desired name inside your Databricks workspace.
-
-```bash
-# AWS S3 bucket name
-AWS_S3_BUCKET = "bucket_name"
-# Mount name for the bucket
-MOUNT_NAME = "/mnt/mount_name"
-# Source url
-SOURCE_URL = "s3n://{0}:{1}@{2}".format(ACCESS_KEY, ENCODED_SECRET_KEY, AWS_S3_BUCKET)
-# Mount the drive
-dbutils.fs.mount(SOURCE_URL, MOUNT_NAME)
-```
-
-The code above will return True if the bucket was mounted successfully. You will only need to mount the bucket once, and then you should be able to access it from Databricks at any time.
+- Location of the cloud object storage.
+- Driver specifications to connect to the storage account or container.
+- Security credentials required to access the data.
 
 ### Reading JSON files from mounted S3 bucket
 
-
-
+When reading in the JSONs from S3, make sure to include the complete path to the JSON objects, as seen in your S3 bucket (e.g topics/<USER_ID>.pin/partition=0/).
 
 
 
