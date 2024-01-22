@@ -508,13 +508,7 @@ Apache Spark is a powerful open-source distributed computing system that provide
 
 Databricks, on the other hand, is a cloud-based platform built on top of Apache Spark, making it easier to deploy and manage Spark clusters. Databricks provides a unified analytics platform that can process large amounts of data quickly. Databricks provides an optimised and managed Spark environment.
 
-To clean and query the data from the three Kafka topics, the S3 bucket will be mounted to a Databricks account. Within Databricks three DataFrames will be created to hold this data:
-
-- df_pin for the Pinterest post data
-- df_geo for the geolocation data
-- df_user for the user data.
-
-To read data from an Amazon S3 bucket into Databricks, the following steps need to be taken:
+To clean and query the data from the three Kafka topics, the S3 bucket will be mounted to a Databricks account. To read data from an Amazon S3 bucket into Databricks, the following steps need to be taken:
 
 ### Create AWS Access Key and Secret Access Key for Databricks
 
@@ -556,6 +550,12 @@ In the 'Databricks' UI:
 
 ### Mount an AWS S3 bucket to Databricks
 
+The following file holds the methods for mounting the data within the class *S3DataLoader*
+
+```bash
+/pinterest-data-pipeline545/classes/databricks_mount_data.py
+```
+
 > [!Note]
 >
 > This project uses mounting to connect to the AWS S3 bucket.
@@ -578,6 +578,35 @@ Databricks mounts create a link between a workspace and cloud object storage, wh
 To read the data from the uploaded source, spark.read methods were used in notebooks utilising the Python programming language.
 
 When reading in the JSONs from S3, the complete path to the JSON objects was used, as seen in the S3 bucket (e.g topics/<USER_ID>.pin/partition=0/).
+
+### Creating dataframes from JSON files
+
+The following file holds the methods for creating the dataframes within the class *S3DataLoader*
+
+```bash
+/pinterest-data-pipeline545/classes/databricks_mount_data.py
+```
+
+Within Databricks three DataFrames will be created to hold the data:
+
+- df_pin for the Pinterest post data
+- df_geo for the geolocation data
+- df_user for the user data.
+
+However these dataframes are non-Delta tables with many small files. Therefore to improve the performance of queries, these dataframes are converted to Delta with the DeltaTable API. The new dataframe tables will accelerate queries.
+
+A Delta table, refers to a storage layer that brings ACID (Atomicity, Consistency, Isolation, Durability) transactions to Apache Spark. Delta tables are designed to improve the reliability, performance, and manageability of data lakes.
+
+Key features of Delta tables include:
+
+- ACID Transactions: Delta tables provide support for ACID transactions, which ensures that operations on the data are atomic, consistent, isolated, and durable. This is particularly important for data consistency and reliability in a distributed and parallel processing environment.
+- Schema Evolution: Delta tables support schema evolution, allowing you to modify the structure of the data over time without requiring a full rewrite of the entire dataset. This is useful when dealing with evolving data requirements.
+- Time Travel: Delta tables enable time travel, allowing you to query the data as it existed at a specific point in time. This is beneficial for auditing, debugging, or rolling back to a previous state of the data.
+- Concurrency Control: Delta tables provide concurrency control mechanisms to handle multiple users or applications trying to modify the same data concurrently. This helps avoid conflicts and ensures data consistency.
+- Unified Batch and Streaming: Delta supports both batch and streaming workloads, making it suitable for a wide range of data processing scenarios. You can use Delta tables for both batch data processing using Spark jobs and real-time streaming data using Structured Streaming.
+- Metadata Management: Delta tables maintain metadata that tracks the changes made to the data, enabling efficient management and optimization of data operations.
+
+You can then perform various operations on the Delta table, taking advantage of its ACID properties and other features. Delta tables are particularly useful for managing and processing large-scale data in a robust and efficient manner.
 
 ### Clean data read from JSON files
 
@@ -622,29 +651,15 @@ To clean the df_user DataFrame the following cell will perform the following tra
 
 ### Querying the Batch Data
 
+The following file holds the scripts for quering the data:
+
+```bash
+/pinterest-data-pipeline545/databricks_query_data.py
+```
+
 Before querieing the data the three dataframes (df_pin, df_geo, and df_user) are joined together on the common column heading 'ind' into a single dataframe called df_all.
 
 To make sure that df_all is a valid DataFrame it will be created and registered as a temporary table before executing any SQL queries. To do this df_all is registered as a temporary view using df_all.createOrReplaceTempView("df_all").
-
-However df_all is a non-Delta table with many small files. Therefore to improve the performance of queries, df_all is converted to Delta with the OPTIMIZE command. The new df_optimised table will accelerate queries.
-
-A Delta table, refers to a storage layer that brings ACID (Atomicity, Consistency, Isolation, Durability) transactions to Apache Spark. Delta tables are designed to improve the reliability, performance, and manageability of data lakes.
-
-Key features of Delta tables include:
-
-- ACID Transactions: Delta tables provide support for ACID transactions, which ensures that operations on the data are atomic, consistent, isolated, and durable. This is particularly important for data consistency and reliability in a distributed and parallel processing environment.
-- Schema Evolution: Delta tables support schema evolution, allowing you to modify the structure of the data over time without requiring a full rewrite of the entire dataset. This is useful when dealing with evolving data requirements.
-- Time Travel: Delta tables enable time travel, allowing you to query the data as it existed at a specific point in time. This is beneficial for auditing, debugging, or rolling back to a previous state of the data.
-- Concurrency Control: Delta tables provide concurrency control mechanisms to handle multiple users or applications trying to modify the same data concurrently. This helps avoid conflicts and ensures data consistency.
-- Unified Batch and Streaming: Delta supports both batch and streaming workloads, making it suitable for a wide range of data processing scenarios. You can use Delta tables for both batch data processing using Spark jobs and real-time streaming data using Structured Streaming.
-- Metadata Management: Delta tables maintain metadata that tracks the changes made to the data, enabling efficient management and optimization of data operations.
-
-You can then perform various operations on the Delta table, taking advantage of its ACID properties and other features. Delta tables are particularly useful for managing and processing large-scale data in a robust and efficient manner.
-
-
-
-
-
 
 #### Questions Proposed for Querying the Batch Data
 
@@ -690,3 +705,6 @@ Question 8: Find the median follower count of users based on their joining year 
 
 - Find the median follower count of users that have joined between 2015 and 2020, based on which age group they are part of.
 - The query should return a DataFrame that contains the following columns: (age_group, post_year, median_follower_count)
+
+## Batch Processing: AWS MWAA
+
