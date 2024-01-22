@@ -2,9 +2,23 @@
 # MAGIC %md
 # MAGIC # Batch Data Processing using Spark on Databricks
 # MAGIC
+# MAGIC Apache Spark is a powerful open-source distributed computing system that provides fast and general-purpose cluster computing for big data processing.
+# MAGIC
+# MAGIC Databricks, on the other hand, is a cloud-based platform built on top of Apache Spark, making it easier to deploy and manage Spark clusters. Databricks provides a unified analytics platform that can process large amounts of data quickly. Databricks provides an optimised and managed Spark environment.
+# MAGIC
+# MAGIC To clean and query the data from the three Kafka topics, the S3 bucket will be mounted to a Databricks account. Within Databricks three DataFrames will be created to hold this data:
+# MAGIC
+# MAGIC - df_pin for the Pinterest post data
+# MAGIC - df_geo for the geolocation data
+# MAGIC - df_user for the user data.
+# MAGIC
+# MAGIC This notebook will falcitate the following procedures:
+# MAGIC
 # MAGIC - Mount batch data
 # MAGIC - Clean batch data
 # MAGIC - Query batch data
+# MAGIC
+# MAGIC This notebook uses the mounting methods and dataframe creation methods from the databricks_mount_data.py file loacted in the **classes** folder. Thi s notebook also use the dataframe cleaning methods from the databricks_clean_data.py file also located in the **classes** folder.
 # MAGIC
 
 # COMMAND ----------
@@ -33,15 +47,16 @@
 # COMMAND ----------
 
 if __name__ == "__main__":
-    delta_table_path = "dbfs:/user/hive/warehouse/authentication_credentials"
+    credentials_path = "dbfs:/user/hive/warehouse/authentication_credentials"
+    delta_table_path = "/delta/my_table"
     iam_username = "0ab336d6fcf7"
     topics = ['pin', 'geo', 'user']
-    data_loader = S3DataLoader(delta_table_path, iam_username, topics)
+    data_loader = S3DataLoader(credentials_path, iam_username, topics, delta_table_path)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Display unmounted data
+# MAGIC #### Display data
 # MAGIC
 # MAGIC Databricks no longer recommends mounting external data locations to Databricks Filesystem.
 # MAGIC
@@ -222,25 +237,14 @@ if __name__ == "__main__":
 
 # COMMAND ----------
 
-from delta.tables import DeltaTable
-
 # Join the three dataframes
 df_all = cleaned_df_pin.join(cleaned_df_geo, 'ind').join(cleaned_df_user, 'ind')
 
-# Write the Delta table
-delta_table_path = "/delta/my_table/v1"
-df_all.write.format("delta").mode("overwrite").save(delta_table_path)
-
-# Use DeltaTable API to optimize the Delta table
-delta_table = DeltaTable.forPath(spark, delta_table_path)
-delta_table.vacuum()
-df_optimised = delta_table.toDF()
-
 # Create a temperory table of the combined dataframes
-df_optimised.createOrReplaceTempView("df_optimised")
+df_all.createOrReplaceTempView("df_all")
 
-# Display the optimized Delta tables
-display(df_optimised)
+# Display the combined dataframe
+display(df_all)
 
 # COMMAND ----------
 
@@ -260,7 +264,7 @@ top_category_per_country = spark.sql("""
             category, 
             COUNT(category) AS category_count, 
             RANK() OVER (PARTITION BY country ORDER BY count(category) DESC) AS category_rank 
-        FROM df_optimised 
+        FROM df_all 
         GROUP BY country, category 
     ) 
     SELECT country, category, category_count 
@@ -288,7 +292,7 @@ top_category_per_year = spark.sql("""
             EXTRACT(YEAR FROM timestamp) AS post_year,
             COUNT(category) AS category_count,
             RANK() OVER (PARTITION BY EXTRACT(YEAR FROM timestamp) ORDER BY count(category) DESC) AS category_rank 
-        FROM df_optimised 
+        FROM df_all 
         GROUP BY EXTRACT(YEAR FROM timestamp), category
     )
     SELECT post_year, category, category_count 
@@ -314,7 +318,7 @@ display(top_category_per_year)
 # Step 1:
 top_user_per_country = spark.sql("""
     SELECT country, poster_name, MAX(follower_count) AS follower_count
-    FROM df_optimised
+    FROM df_all
     GROUP BY country, poster_name
     ORDER BY follower_count DESC
 """)
@@ -324,7 +328,7 @@ display(top_user_per_country)
 country_with_top_user = spark.sql("""
     WITH top_users AS (
         SELECT country, poster_name, MAX(follower_count) AS follower_count
-        FROM df_optimised
+        FROM df_all
         GROUP BY country, poster_name
         ORDER BY follower_count DESC
     )
@@ -358,7 +362,7 @@ top_category_per_age = spark.sql("""
             END AS age_group,
             category, 
             COUNT(category) AS category_count
-        FROM df_optimised
+        FROM df_all
         GROUP BY age_group, category
     ),
     ranked_ages AS (
@@ -397,7 +401,7 @@ median_follower_per_age_group = spark.sql("""
             ELSE 'NA'
         End as age_group,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY follower_count) AS median_follower_count 
-    FROM df_optimised
+    FROM df_all
     GROUP BY age_group
     ORDER BY median_follower_count DESC
 """)
@@ -417,7 +421,7 @@ users_joined_per_year = spark.sql("""
     SELECT
         EXTRACT(YEAR FROM date_joined) AS post_year,
         COUNT(DISTINCT(user_name)) AS number_users_joined
-    FROM df_optimised 
+    FROM df_all 
     WHERE EXTRACT(YEAR FROM date_joined) BETWEEN 2015 AND 2020
     GROUP BY post_year
 """)
@@ -437,7 +441,7 @@ median_follower_per_join_year = spark.sql("""
     SELECT
         EXTRACT(YEAR FROM date_joined) AS post_year,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY follower_count) AS median_follower_count
-    FROM df_optimised 
+    FROM df_all 
     WHERE EXTRACT(YEAR FROM date_joined) BETWEEN 2015 AND 2020
     GROUP BY post_year
 """)
@@ -464,7 +468,7 @@ median_follower_per_join_year_age_group = spark.sql("""
         End as age_group,
         EXTRACT(YEAR FROM date_joined) AS post_year,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY follower_count) AS median_follower_count
-    FROM df_optimised 
+    FROM df_all 
     WHERE EXTRACT(YEAR FROM date_joined) BETWEEN 2015 AND 2020
     GROUP BY age_group, post_year
     Order by age_group, post_year
