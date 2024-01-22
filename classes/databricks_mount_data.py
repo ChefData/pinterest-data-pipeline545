@@ -1,4 +1,5 @@
 # Databricks notebook source
+from delta.tables import DeltaTable
 from pyspark.sql import DataFrame as SparkDataFrame
 from pyspark.sql import SparkSession
 from typing import Tuple, List, Dict
@@ -11,28 +12,30 @@ class S3DataLoader:
 
     Attributes:
     - spark (pyspark.sql.SparkSession): Spark session for handling PySpark operations.
-    - delta_table_path (str): The path to the Delta table containing AWS keys.
+    - credentials_path (str): The path to the credentials table containing AWS keys.
     - iam_username (str): IAM username for constructing S3 bucket name.
     - aws_s3_bucket (str): The constructed AWS S3 bucket name based on IAM username.
     - mount_name (str): The mount point for the S3 bucket in the Spark environment.
     - topics (list): List of topics to load.
+    - delta_table_path (str): The path to the Delta tables.
     """
-
-    def __init__(self, delta_table_path: str, iam_username: str, topics: List[str]):
+    def __init__(self, credentials_path: str, iam_username: str, topics: List[str], delta_table_path: str):
         """
         Initialize Spark session and set instance variables
 
         Parameters:
-        - delta_table_path (str): The path to the Delta table containing AWS keys.
+        - credentials_path (str): The path to the credentials table containing AWS keys.
         - iam_username (str): IAM username for constructing S3 bucket name.
         - topics (list): List of topics to load.
+        - delta_table_path (str): The path to the Delta tables.
         """
         self.spark: SparkSession = SparkSession.builder.appName("S3DataLoader").getOrCreate()
-        self.delta_table_path: str = delta_table_path
+        self.credentials_path: str = credentials_path
         self.iam_username: str = iam_username
         self.aws_s3_bucket: str = f"user-{self.iam_username}-bucket"
         self.mount_name: str = f"/mnt/{self.aws_s3_bucket}"
         self.topics: List[str] = topics
+        self.delta_table_path: str = delta_table_path
 
     def __load_aws_keys(self) -> Tuple[str, str, str]:
         """
@@ -46,7 +49,7 @@ class S3DataLoader:
         """
         try:
             # Read access keys from Delta table
-            keys_df = (self.spark.read.format("delta").load(self.delta_table_path).select("Access key ID", "Secret access key"))
+            keys_df = (self.spark.read.format("delta").load(self.credentials_path).select("Access key ID", "Secret access key"))
             access_key, secret_key = keys_df.first()
             # URL encode the secret key
             encoded_secret_key: str = urllib.parse.quote(secret_key, safe="")
@@ -143,20 +146,31 @@ class S3DataLoader:
     
     def create_dataframes(self, mounted: bool = True) -> None:
         """
-        Create global DataFrames from the loaded JSON files.
+        Optimize and create global DataFrames from JSON files in the S3 bucket.
 
         Parameters:
-        - mounted (bool): Flag to indicate if the S3 bucket is already mounted.
+        - mounted (bool): Flag to indicate if the S3 bucket is already mounted. Defaults to True.
 
         Raises:
-        - Exception: If there is an issue creating global DataFrames.
+        - FileNotFoundError: If a file specified in the path is not found.
+        - Exception: If there is an issue creating or optimizing global DataFrames.
         """
         try:
             dataframes: Dict[str, SparkDataFrame]  = self.__read_json_files(mounted)
             for topic, df in dataframes.items():
+                # Consistent delta table path
+                delta_table_path = f"{self.delta_table_path}/{topic}"
+                # Write the Delta table
+                df.write.format("delta").mode("overwrite").save(delta_table_path)
+                # Use DeltaTable API to optimize the Delta table
+                delta_table = DeltaTable.forPath(self.spark, delta_table_path)
+                delta_table.vacuum()
+                df = delta_table.toDF()
+                # Create a temperory table of the dataframes
+                df.createOrReplaceTempView("df")
                 globals()[f"df_{topic}"] = df
-                print(f"Created dataFrame df_{topic} from {self.aws_s3_bucket}/topics/{self.iam_username}.{topic}")
+                print(f"Created DataFrame df_{topic} from {self.aws_s3_bucket}/topics/{self.iam_username}.{topic}")
+        except FileNotFoundError as file_not_found_error:
+            raise FileNotFoundError(f"File not found: {file_not_found_error}")
         except Exception as error:
             raise Exception(f"Error creating global DataFrames: {str(error)}")
-
-
