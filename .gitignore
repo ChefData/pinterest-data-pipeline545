@@ -7,5 +7,6 @@ Consumer/
 *.env
 *.pem
 *.yaml
+*.DS_Store
 
 # Individual Files
