@@ -14,7 +14,7 @@
 # MAGIC
 # MAGIC This notebook will falcitate the following procedures:
 # MAGIC
-# MAGIC - Mount batch data
+# MAGIC - Load batch data
 # MAGIC - Clean batch data
 # MAGIC - Query batch data
 # MAGIC
@@ -24,18 +24,18 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Mount Batch Data
+# MAGIC ## Load Batch Data
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### Import methods 
 # MAGIC
-# MAGIC The following cell allows access to the methods from the S3DataLoader class within the databricks_mount_data notebook.
+# MAGIC The following cell allows access to the methods from the S3DataLoader class within the databricks_load_data notebook.
 
 # COMMAND ----------
 
-# MAGIC %run "./classes/databricks_mount_data"
+# MAGIC %run "/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/databricks_load_data"
 
 # COMMAND ----------
 
@@ -48,77 +48,23 @@
 
 if __name__ == "__main__":
     credentials_path = "dbfs:/user/hive/warehouse/authentication_credentials"
-    delta_table_path = "/delta/my_table"
     iam_username = "0ab336d6fcf7"
     topics = ['pin', 'geo', 'user']
-    data_loader = S3DataLoader(credentials_path, iam_username, topics, delta_table_path)
+    data_loader = S3DataLoader(credentials_path, iam_username, topics)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Display data
+# MAGIC #### Create Dataframes
 # MAGIC
 # MAGIC Databricks no longer recommends mounting external data locations to Databricks Filesystem.
 # MAGIC
 # MAGIC The following cell has been supplyed as an alternative method to accessing the data.
-# MAGIC
-# MAGIC If this cell is used, the rest of the steps within **Mount Batch Data** can be skipped.
 
 # COMMAND ----------
 
 if __name__ == "__main__":
     data_loader.create_dataframes(mounted=False)
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC #### Mount S3 bucket
-# MAGIC
-# MAGIC As per the project instructions the following cell mounts an external S3 bucket to Databricks Filesystem.
-
-# COMMAND ----------
-
-if __name__ == "__main__":
-    # Load AWS keys and configure S3 bucket
-    data_loader.mount_s3_bucket()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC #### Show file structure
-# MAGIC
-# MAGIC The following cell will show the file structure within the mount path.
-
-# COMMAND ----------
-
-if __name__ == "__main__":
-    # Display the mounted S3 bucket
-    data_loader.display_s3_bucket()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC #### Create dataframes
-# MAGIC
-# MAGIC The following cell will create three dataframes from the data stored in the mount path.
-
-# COMMAND ----------
-
-if __name__ == "__main__":
-    # Create dataframes
-    data_loader.create_dataframes(mounted=True)
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC #### Unmount S3 Bucket
-# MAGIC
-# MAGIC If required, the following cell will unmount the S3 bucket from Databricks Filesystem.
-
-# COMMAND ----------
-
-if __name__ == "__main__":
-    data_loader.unmount_s3_bucket()
 
 # COMMAND ----------
 
@@ -134,7 +80,12 @@ if __name__ == "__main__":
 
 # COMMAND ----------
 
-# MAGIC %run "./classes/databricks_clean_data"
+# MAGIC %run "/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/databricks_clean_data"
+
+# COMMAND ----------
+
+if __name__ == "__main__":
+    data_cleaner = DataCleaning()
 
 # COMMAND ----------
 
@@ -153,7 +104,6 @@ if __name__ == "__main__":
 # COMMAND ----------
 
 if __name__ == "__main__":
-    data_cleaner = DataCleaning()
     cleaned_df_pin = data_cleaner.clean_pin_data(df_pin)
 
     print("Schema for original dataframe")
@@ -182,7 +132,6 @@ if __name__ == "__main__":
 # COMMAND ----------
 
 if __name__ == "__main__":
-    data_cleaner = DataCleaning()
     cleaned_df_geo = data_cleaner.clean_geo_data(df_geo)
 
     print("Schema for original dataframe")
@@ -211,7 +160,6 @@ if __name__ == "__main__":
 # COMMAND ----------
 
 if __name__ == "__main__":
-    data_cleaner = DataCleaning()
     cleaned_df_user = data_cleaner.clean_user_data(df_user)
 
     print("Schema for original dataframe")
@@ -237,14 +185,24 @@ if __name__ == "__main__":
 
 # COMMAND ----------
 
-# Join the three dataframes
-df_all = cleaned_df_pin.join(cleaned_df_geo, 'ind').join(cleaned_df_user, 'ind')
+if __name__ == "__main__":
+    # Join the three dataframes
+    df_all = cleaned_df_pin.join(cleaned_df_geo, 'ind').join(cleaned_df_user, 'ind')
 
-# Create a temperory table of the combined dataframes
-df_all.createOrReplaceTempView("df_all")
+    # Write the Delta table
+    delta_table_path = "/delta/my_table/v1"
+    df_all.write.format("delta").mode("overwrite").save(delta_table_path)
 
-# Display the combined dataframe
-display(df_all)
+    # Use DeltaTable API to optimize the Delta table
+    delta_table = DeltaTable.forPath(spark, delta_table_path)
+    delta_table.vacuum()
+    df_all = delta_table.toDF()
+
+    # Create a temperory table of the combined dataframes
+    df_all.createOrReplaceTempView("df_all")
+
+    # Display the optimized Delta tables
+    display(df_all)
 
 # COMMAND ----------
 
