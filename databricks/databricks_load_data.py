@@ -1,8 +1,10 @@
 # Databricks notebook source
 from delta.tables import DeltaTable
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import explode, from_json, col
 from typing import Tuple, List, Dict
 import urllib.parse
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType, TimestampType, FloatType, ArrayType, DateType
 
 
 class S3DataLoader:
@@ -46,12 +48,12 @@ class S3DataLoader:
         try:
             # Read access keys from Delta table
             keys_df = self.spark.read.format("delta").load(self.credentials_path).select("Access key ID", "Secret access key")
-            access_key, secret_key = keys_df.first()
+            access_key, secret_key = keys_df.first() if keys_df.count() > 0 else (None, None)
             # URL encode the secret key
             encoded_secret_key: str = urllib.parse.quote(secret_key, safe="")
             # Construct the source URL for S3 access
             source_url: str = f"s3n://{access_key}:{encoded_secret_key}@{self.aws_s3_bucket}"
-            return source_url, access_key, encoded_secret_key
+            return source_url, access_key, secret_key, encoded_secret_key
         except FileNotFoundError as file_not_found_error:
             raise FileNotFoundError(f"Error loading AWS keys: {file_not_found_error}")
         except Exception as error:
@@ -80,7 +82,7 @@ class S3DataLoader:
         - Exception: If there is an issue mounting the S3 bucket.
         """
         try:
-            source_url, _, _ = self.__load_aws_keys()
+            source_url, _, _, _ = self.__load_aws_keys()
             if not self.__is_mounted():
                 dbutils.fs.mount(source_url, self.mount_name)
                 print(f"Mounted Source URL to {self.mount_name}")
@@ -130,7 +132,7 @@ class S3DataLoader:
         - Exception: If there is an issue reading JSON files.
         """
         try:
-            source_url, access_key, encoded_secret_key = self.__load_aws_keys()
+            _, access_key, _, encoded_secret_key = self.__load_aws_keys()
             dataframes: Dict[str, DataFrame] = {}
             for topic in self.topics:
                 file_location: str  = (
@@ -165,5 +167,106 @@ class S3DataLoader:
             raise FileNotFoundError(f"File not found: {file_not_found_error}")
         except Exception as error:
             raise Exception(f"Error creating global DataFrames: {str(error)}")
+    
+    def __read_stream_files(self) -> Dict[str, DataFrame]:
+        try:
+            _, access_key, secret_key, _ = self.__load_aws_keys()
+            dataframes: Dict[str, DataFrame] = {}
+            for topic in self.topics:
+                stream_name = f"streaming-{self.iam_username}-{topic}"
+                df = (
+                    self.spark.readStream.format('kinesis')
+                    .option('streamName', stream_name)
+                    .option('initialPosition', 'earliest')
+                    .option('region', 'us-east-1')
+                    .option('awsAccessKey', access_key)
+                    .option('awsSecretKey', secret_key)
+                    .load()
+                )
+                dataframes[topic] = df
+            return dataframes
+        except Exception as error:
+            raise Exception(f"Error reading JSON files: {str(error)}")
 
+    def create_stream_dataframes(self) -> None:
+        try:
+            dataframes: Dict[str, DataFrame] = self.__read_stream_files()
+            for topic, df in dataframes.items():
+                # Cast 'data' column to string
+                df = df.withColumn("data", col("data").cast(StringType()))
+                
+                # Explode the 'data' array to separate rows
+                df = df.select(explode(from_json("data", ArrayType(StringType()))).alias("json_data"))
+
+                # Define the schema for the JSON data
+                schema_mapping = {
+                    'pin': self.__get_pin_schema(),
+                    'geo': self.__get_geo_schema(),
+                    'user': self.__get_user_schema()
+                }
+
+                # Apply the schema to the exploded 'json_data' column
+                df = df.select(from_json("json_data", schema_mapping[topic]).alias("data")).select("data.*")
+
+                # Create a global temporary view of the Delta table
+                table_name = f"df_{topic}"
+                globals()[table_name] = df
+                df.createOrReplaceGlobalTempView(table_name)
+                print(f"Created DataFrame {table_name}")
+        except FileNotFoundError as file_not_found_error:
+            raise FileNotFoundError(f"File not found: {file_not_found_error}")
+        except Exception as error:
+            raise Exception(f"Error creating global DataFrames: {str(error)}")
+
+    @staticmethod
+    def __get_pin_schema():
+        return StructType([
+            StructField("index", IntegerType(), True),
+            StructField("unique_id", StringType(), True),
+            StructField("title", StringType(), True),
+            StructField("description", StringType(), True),
+            StructField("poster_name", StringType(), True),
+            StructField("follower_count", StringType(), True),
+            StructField("tag_list", StringType(), True),
+            StructField("is_image_or_video", StringType(), True),
+            StructField("image_src", StringType(), True),
+            StructField("downloaded", IntegerType(), True),
+            StructField("save_location", StringType(), True),
+            StructField("category", StringType(), True)
+        ])
+
+    @staticmethod
+    def __get_geo_schema():
+        return StructType([
+            StructField("ind", IntegerType()),
+            StructField("timestamp", TimestampType()),
+            StructField("latitude", DoubleType()),
+            StructField("longitude", DoubleType()),
+            StructField("country", StringType())
+        ])
+
+    @staticmethod
+    def __get_user_schema():
+        return StructType([
+            StructField("ind", IntegerType(), True),
+            StructField("first_name", StringType(), True),
+            StructField("last_name", StringType(), True),
+            StructField("age", IntegerType(), True),
+            StructField("date_joined", DateType(), True)
+        ])
+
+    def write_stream(self, df):
+        for topic in self.topics:
+            table_name = f"{self.iam_username}_{topic}_table"
+            df.writeStream \
+                .format("delta") \
+                .outputMode("append") \
+                .option("checkpointLocation", f"/tmp/kinesis/{table_name}_checkpoints/") \
+                .option("mergeSchema", "true") \
+                .table(table_name)
+
+    def clear_delta_tables(self) -> None:
+        for topic in self.topics:
+            table_name = f"{self.iam_username}_{topic}_table"
+            dbutils.fs.rm(f"/tmp/kinesis/{table_name}_checkpoints/")
 
