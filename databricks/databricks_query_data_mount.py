@@ -24,18 +24,24 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Load Batch Data
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC #### Import methods 
+# MAGIC #### Import loading methods 
 # MAGIC
 # MAGIC The following cell allows access to the methods from the S3DataLoader class within the databricks_load_data notebook.
 
 # COMMAND ----------
 
-# MAGIC %run "/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/databricks_load_data"
+# MAGIC %run "./databricks_load_data"
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Import cleaning methods
+# MAGIC
+# MAGIC The following cell allows access to the methods from the DataCleaning class within the databricks_clean_data notebook
+
+# COMMAND ----------
+
+# MAGIC %run "./databricks_clean_data"
 
 # COMMAND ----------
 
@@ -51,6 +57,12 @@ if __name__ == "__main__":
     iam_username = "0ab336d6fcf7"
     topics = ['pin', 'geo', 'user']
     data_loader = S3DataLoader(credentials_path, iam_username, topics)
+    data_cleaner = DataCleaning()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Load Batch Data
 
 # COMMAND ----------
 
@@ -95,22 +107,6 @@ if __name__ == "__main__":
 
 # MAGIC %md
 # MAGIC ## Clean Batch Data
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC #### Import methods
-# MAGIC
-# MAGIC The following cell allows access to the methods from the DataCleaning class within the databricks_clean_data notebook
-
-# COMMAND ----------
-
-# MAGIC %run "/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/databricks_clean_data"
-
-# COMMAND ----------
-
-if __name__ == "__main__":
-    data_cleaner = DataCleaning()
 
 # COMMAND ----------
 
