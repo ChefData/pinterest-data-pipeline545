@@ -6,7 +6,7 @@ from pyspark.sql.functions import regexp_replace, col, array, concat, lit
 class DataCleaning:
     """Class for cleaning data in PySpark DataFrames."""
 
-    @staticmethod    
+    @staticmethod
     def clean_pin_data(df: DataFrame) -> DataFrame:
         """
         Clean pin data in the DataFrame.
