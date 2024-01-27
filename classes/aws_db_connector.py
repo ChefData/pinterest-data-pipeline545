@@ -1,39 +1,31 @@
 from classes.api_communicator import APICommunicator
-from classes.database_connector import DatabaseConnector
+from classes.rds_db_connector import RDSDBConnector
 from sqlalchemy import text, bindparam
 from time import sleep
-import logging
-import signal
-import random
+import logging, signal, random
+
 
 # Sets the seed for the random number generator, ensuring that if the program is ran multiple times, it will produce the same sequence of random numbers each time.
 random.seed(100)
 
 # Configure the logging module
-logging.basicConfig(level=logging.INFO)
-
-# Constants
-PINTEREST_TABLE = "pinterest_data"
-GEOLOCATION_TABLE = "geolocation_data"
-USER_TABLE = "user_data"
+log_level = logging.INFO
+logging.basicConfig(level=log_level)
 
 class AWSDBConnector:
     """Class for connecting to a database and sending data to an API."""
 
-    def __init__(self) -> None:
+    def __init__(self, topics_dict: dict) -> None:
         """Initialize the database and API connections."""
-        try:
-            # Initialize connections
-            self.database_connector = DatabaseConnector()
-            self.api_communicator = APICommunicator()
-            # Register a signal handler for graceful termination
-            self.stop_flag: bool = False
-            signal.signal(signal.SIGINT, self.__handle_signal)
-        except Exception as error:
-            logging.error(f"Error during initialization: {error}")
-            raise
-
-    def __handle_signal(self, signum: int, frame) -> None:
+        # Initialize connections
+        self.database_connector = RDSDBConnector()
+        self.api_communicator = APICommunicator()
+        # Register a signal handler for graceful termination
+        self.stop_flag: bool = False
+        self.topics_dict: dict = topics_dict
+        signal.signal(signal.SIGINT, self.__handle_signal)
+        
+    def __handle_signal(self, signum, frame) -> None:
         """Handle the termination signal."""
         logging.info("Received signal to stop. Exiting gracefully.")
         self.stop_flag = True
@@ -56,69 +48,49 @@ class AWSDBConnector:
             query = text(f"SELECT * FROM {table_name} LIMIT :random_row, 1")
             query = query.bindparams(bindparam("random_row", random_row))
             selected_row = connection.execute(query)
-            for row in selected_row:
-                return dict(row._mapping)
+            return dict(selected_row.first()._mapping) if selected_row.rowcount > 0 else {}
         except Exception as error:
             logging.error(f"Error during database query: {error}")
             raise
 
-    @staticmethod
-    def __convert_datetime(data_dict: dict, key: str) -> None:
+    def _simulate_asynchronous_data_fetching(self) -> None:
         """
-        Convert datetime objects in the data dictionary to formatted strings.
-
-        Parameters:
-        - data_dict: The dictionary containing data.
-        - key: The key representing the datetime field to convert.
+        Introduce a random sleep to simulate asynchronous data fetching.
         """
-        try:
-            # Convert datetime objects to formatted strings
-            if key in data_dict and data_dict[key] is not None:
-                data_dict[key] = data_dict[key].strftime('%Y-%m-%d %H:%M:%S')
-        except Exception as error:
-            logging.error(f"Error during datetime conversion: {error}")
-            raise
+        #sleep(random.randrange(0, 2))
+        sleep(random.uniform(0, 2))
 
-    def _send_data_batch_to_api(self, data_type: str, data_list: list) -> None:
+    def _process_data(self, streaming: bool) -> None:
         """
-        Convert datetime fields and send data to the API in batches.
+        Fetch random rows from different tables and send data to the API.
 
-        Parameters:
-        - data_type: The type of data being sent.
-        - data_list: A list of dictionaries representing the data to send.
+        Args:
+            streaming (bool): If True, send data to the API in a streaming manner;
+                              otherwise, send data in batches.
         """
-        try:
-            # Convert datetime fields and send data to the API in batches
-            for data in data_list:
-                self.__convert_datetime(data, "timestamp")
-                self.__convert_datetime(data, "date_joined")
-                self.api_communicator._send_data_to_api(data_type, data)
-        except Exception as error:
-            logging.error(f"Error during API communication: {error}")
-            raise
+        random_row = random.randint(0, 11000)
+        with self.database_connector.db_engine.connect() as connection:
+            for topic, table_name in self.topics_dict.items():
+                result = self.__get_random_row(connection, table_name, random_row)
+                logging.info(f'Random example of {table_name}: %s', result)
+                if streaming:
+                    self.api_communicator._send_data_stream_to_api(topic, [result])
+                else:
+                    self.api_communicator._send_data_batch_to_api(topic, [result])
 
-    def run_infinite_post_data_loop(self) -> None:
-        """Run an infinite loop to simulate continuous data processing."""
-        try:
-            while not self.stop_flag:
-                # Introduce a random sleep to simulate asynchronous data fetching
-                sleep(random.randrange(0, 2))
-                random_row = random.randint(0, 11000)
+    def run_infinite_post_data_loop(self, streaming: bool) -> None:
+        """
+        Run an infinite loop to simulate continuous data processing.
 
-                with self.database_connector.db_engine.connect() as connection:
-                    # Fetch random rows from different tables
-                    pin_result = self.__get_random_row(connection, PINTEREST_TABLE, random_row)
-                    geo_result = self.__get_random_row(connection, GEOLOCATION_TABLE, random_row)
-                    user_result = self.__get_random_row(connection, USER_TABLE, random_row)
+        Args:
+            streaming (bool): If True, send data to the API in a streaming manner;
+                              otherwise, send data in batches.
+        """
+        while not self.stop_flag:
+            try:
+                self._simulate_asynchronous_data_fetching()
+                self._process_data(streaming)
+            except Exception as error:
+                logging.error(f"Unexpected error: {error}")
 
-                    # Log the fetched data
-                    logging.info('Random example of pinterest_data: %s', pin_result)
-                    logging.info('Random example of geolocation_data: %s', geo_result)
-                    logging.info('Random example of user_data: %s', user_result)
 
-                    # Send data to the API in batches
-                    self._send_data_batch_to_api("pin", [pin_result])
-                    self._send_data_batch_to_api("geo", [geo_result])
-                    self._send_data_batch_to_api("user", [user_result])
-        except Exception as error:
-            logging.error(f"Unexpected error: {error}")
