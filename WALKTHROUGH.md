@@ -510,6 +510,14 @@ Databricks, on the other hand, is a cloud-based platform built on top of Apache 
 
 To clean and query the data from the three Kafka topics, the S3 bucket will be mounted to a Databricks account. To read data from an Amazon S3 bucket into Databricks, the following steps need to be taken:
 
+### File Structure
+
+- The following file [databricks_load_data.py](../databricks/databricks_load_data.py) holds the methods for lodaing the data within the class *S3DataLoader*
+- The following file [databricks_clean_data.py](../databricks/databricks_clean_data.py) holds the methods for cleaning the data within the class *DataCleaning*
+
+- The following file [databricks_query_data_mount.py](../databricks/databricks_query_data_mount.py) holds the script for mounting, cleaning and querying the data.
+- The following file [databricks_query_data_direct.py](../databricks/databricks_query_data_direct.py) holds an alternative script for accessing the data, along with cleaning and querying the data. this is due to Databricks no longer recommends mounting external data locations to Databricks Filesystem.
+
 ### Create AWS Access Key and Secret Access Key for Databricks
 
 > [!Note]
@@ -550,12 +558,6 @@ In the 'Databricks' UI:
 
 ### Mount an AWS S3 bucket to Databricks
 
-The following file holds the methods for mounting the data within the class *S3DataLoader*
-
-```bash
-/pinterest-data-pipeline545/classes/databricks_mount_data.py
-```
-
 > [!Note]
 >
 > This project uses mounting to connect to the AWS S3 bucket.
@@ -581,12 +583,6 @@ When reading in the JSONs from S3, the complete path to the JSON objects was use
 
 ### Creating dataframes from JSON files
 
-The following file holds the methods for creating the dataframes within the class *S3DataLoader*
-
-```bash
-/pinterest-data-pipeline545/classes/databricks_mount_data.py
-```
-
 Within Databricks three DataFrames will be created to hold the data:
 
 - df_pin for the Pinterest post data
@@ -609,12 +605,6 @@ Key features of Delta tables include:
 You can then perform various operations on the Delta table, taking advantage of its ACID properties and other features. Delta tables are particularly useful for managing and processing large-scale data in a robust and efficient manner.
 
 ### Clean data read from JSON files
-
-The following file holds the methods for cleaning the data within the class *DataCleaning*
-
-```bash
-/pinterest-data-pipeline545/classes/databricks_clean_data.py
-```
 
 Cleaning data that was read from JSON files typically involves handling missing values, filtering out irrelevant information, and transforming the data into a suitable format.
 
@@ -650,12 +640,6 @@ To clean the df_user DataFrame the following cell will perform the following tra
 - Reorder the DataFrame columns to have the following column order: (ind, user_name, age, date_joined)
 
 ### Querying the Batch Data
-
-The following file holds the scripts for quering the data:
-
-```bash
-/pinterest-data-pipeline545/databricks_query_data.py
-```
 
 Before querieing the data the three dataframes (df_pin, df_geo, and df_user) are joined together on the common column heading 'ind' into a single dataframe called df_all.
 
@@ -706,5 +690,415 @@ Question 8: Find the median follower count of users based on their joining year 
 - Find the median follower count of users that have joined between 2015 and 2020, based on which age group they are part of.
 - The query should return a DataFrame that contains the following columns: (age_group, post_year, median_follower_count)
 
-## Batch Processing: AWS MWAA
+## Batch Processing: Managed Workflows for Apache Airflow
 
+Airflow is a generic workflow scheduler with dependency management. Besides its ability to schedule periodic jobs, Airflow lets you express explicit dependencies between different stages in your data pipeline. Each ETL pipeline is represented as a directed acyclic graph (DAG) of tasks. Dependencies are encoded into the DAG by its edges — for any given edge, the downstream task is only scheduled if the upstream task completed successfully. The tasks in Airflow are instances of "operator" class and are implemented as small Python scripts. Since they are simply Python scripts, operators in Airflow can perform many tasks: they can poll for some precondition to be true (also called a sensor) before succeeding, perform ETL directly, or trigger external systems like Databricks.
+
+Databricks implemented an Airflow operator called DatabricksSubmitRunOperator, enabling a smoother integration between Airflow and Databricks. Through this operator, we can hit the Databricks Runs Submit API endpoint, which can externally trigger a single run of a jar, python script, or notebook. After making the initial request to submit the run, the operator will continue to poll for the result of the run. When it completes successfully, the operator will return allowing for downstream tasks to run.
+
+Amazon Managed Workflows for Apache Airflow (MWAA) is a fully managed service provided by Amazon Web Services (AWS) that simplifies the deployment and operation of Apache Airflow. MWAA allows users to build, schedule, and monitor workflows in a scalable and cost-effective manner without the need to manage the underlying infrastructure. All of the components contained in the outer box (in the image below) appear as a single Amazon MWAA environment.
+![Alt text](README_Images/MWAA_Architecture.png)
+
+The following section illustrates how you can set up Airflow and use it to trigger Databricks jobs on AWS MWAA.
+
+### Create and upload a DAG to a MWAA environment
+
+> [!Note]
+>
+> During this project the AWS account had already been provided with access to a MWAA environment 'Databricks-Airflow-env' and to its S3 bucket 'mwaa-dags-bucket'.
+> Thus, the following were not reqiuired:
+>
+> - to create an API token in Databricks to connect to the AWS account
+> - to set up the MWAA-Databricks connection
+> - to create the requirements.txt file. This informs MWAA which python libraries are required to create a Databricks connection. This requirements.txt file will contain: apache-airflow[databricks].
+
+MWAA orchestrates workflows using DAGs. During this project an Airflow DAG was created that triggered a Databricks Notebook to be run on a specific schedule. This DAG was uploaded to the dags folder in the mwaa-dags-bucket.
+
+The AWS account was granted permissions to upload and update the DAG <0ab336d6fcf7_dag> from the following file [0ab336d6fcf7_dag.py](../0ab336d6fcf7_dag.py) to the S3 bucket mwaa-dags-bucket/dags/. This DAG will run a Databricks Notebook on a daily schedule.
+
+The file [0ab336d6fcf7_dag.py](../databricks/0ab336d6fcf7_dag.py) is essentially a script DAG which constructs three DatabricksSubmitRunOperator tasks and then sets the dependency at the end.
+
+In the 'S3' console:
+
+- Navigate to the dags/ folder.
+
+![Alt text](README_Images/MWAA_mwaa-dags-bucket.png)
+
+- Click 'Upload' and drag across the prepared Airflow DAG python file.
+
+![Alt text](README_Images/MWAA_DAGS_Folder.png)
+
+### Trigger a DAG that runs a Databricks Notebook
+
+In the 'MWAA' console
+
+- Click 'Open Airflow UI'
+![Alt text](README_Images/MWAA_Airflow_environments.png)
+
+- Once uploaded to the DAGs folder, the new DAG was avaliable in the Airflow UI on the MWAA environment, under paused DAGs.
+![Alt text](README_Images/MWAA_Airflow_folder.png)
+
+- In order to manually trigger the DAG, it will first have to be unpaused.
+
+- Click on the DAG name
+![Alt text](README_Images/MWAA_DAGS.png)
+
+- Coloured blocks show the status of the DatabricksSubmitRunOperator.
+  - A successful run will be shown with green blocks.
+  - Hover over the blocks to gain more insight into protential errors.
+
+The batch data has now been uploaded, cleaned and then sent to AWS MWAA for further processing to orchestrate the data workflow.
+
+## Stream Processing: AWS Kinesis
+
+Send streaming data to Kinesis and read this data in Databricks
+
+### Create data streams using Kinesis Data Streams
+
+Kinesis Data Streams is a highly customisable AWS streaming solution. Highly customisable means that all parts involved with stream processing, such as data ingestion, monitoring, elasticity, and consumption are done programmatically when creating the stream. An important consideration is that Kinesis Data Streams does not have the ability to do auto scaling.
+
+![Alt text](README_Images/Kinesis_Data_Streams.png)
+
+A Kinesis Data Stream is a set of Shards. A shard is a uniquely identified sequence of data records in a stream. A stream is composed of one or more shards, each of which provides a fixed unit of capacity. The data capacity of your stream is a function of the number of shards that you specify for the stream. You can increase or decrease the number of shards allocated to your stream to keep up with your data demands.
+
+A shard contains:
+
+- a sequence of Data Records, which in turn are composed of:
+  - a Sequence Number: Each data record has a sequence number that is unique per partition-key within its shard. Kinesis Data Streams assigns the sequence number after you write data to the stream. The longer the time period between write requests, the larger the sequence numbers becomes.
+  - a Partition Key: A partition key is used to group data by shard within a stream.
+  - a Data Blob: A Data Blob is an immutable sequence of bytes.
+
+For this project three data streams were created using Kinesis Data Streams, one for each Pinterest table.
+
+- streaming-<USER_ID>-pin
+- streaming-<USER_ID>-geo
+- streaming-<USER_ID>-user
+
+In the 'Kinesis' console:
+
+- Select `Data Streams` from the left hand panel.
+- Click the `Create data stream` button
+- For this project the `Data stream name` will be `streaming-<USER_ID>-<TOPIC_SUFFIX>`
+- For this use case the `On-demand capacity mode` will be used.
+- Click the `Create data stream` button
+
+![Alt text](README_Images/kinesis_create_data_stream.png)
+
+### Configure an API with Kinesis proxy integration
+
+A REST API with an Amazon Kinesis proxy integration is required for this project. This intergration was built into the previously created REST API with Kafka REST proxy integration to allow it to invoke Kinesis actions.
+
+The API is able to invoke the following actions:
+
+- List streams in Kinesis
+- Create, describe and delete streams in Kinesis
+- Add records to streams in Kinesis
+
+> [!Note]
+>
+> During this project the AWS account had been granted the necessary permissions to invoke Kinesis actions, so it was not neccessary to create an IAM role for the API to access Kinesis.
+
+---
+
+📝 - Walkthrough Start
+
+In the 'IAM' console:
+
+- Select *Roles* from the left hand panel.
+- Select the access role with the following structure: <USER_ID-kinesis-access-role>.
+- Copy the ARN of this role
+- This ARN will be used when setting up the Execution role for the integration point of all the methods created.
+
+In the 'API Gateway' console:
+
+- Select the desired API
+- Select *Resources* from the left hand panel
+![Alt text](README_Images/API_Gateway>APIs>Resources.png)
+- Click the *Create resource* button to start provisioning a new resource
+![Alt text](README_Images/API_Gateway>APIs>Create_resource.png)
+- Under Resource Name, type streams
+- Leave the rest as default
+- Click the Create resource button
+![Alt text](README_Images/API_Gateway>APIs>Resources>Streams.png)
+
+- Select the created streams resource
+- Select the *Create method* button
+- Select GET as the method type
+  - For Integration type select AWS Service
+  - For AWS Region choose us-east-1
+  - For AWS Service select Kinesis,
+  - For HTTP method select POST (to invoke Kinesis's ListStreams action)
+  - For Action Type select User action name
+  - For Action name enter ListStreams
+  - For Execution role copy the ARN of the Kinesis Access Role (created in the previous section)
+  - Click *Create method* to finalise provisioning this method
+  ![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>GET.png)
+
+- Select the *Integration request* tab
+![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>Edit_integration_request.png)
+- Click on the Edit button
+- Expand the *URL request headers parameters* panel, click *Add request header parameter*
+  - Under Name enter Content-Type
+  - Under Mapped form enter 'application/x-amz-json-1.1'
+- Expand the *Mapping Templates* panel, click *Add mapping template*
+  - Under Content type enter application/json
+  ![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>headers.png)
+  - Under Template body enter {} in the template editor
+  ![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>mapping.png)
+- Click *Save*
+
+- Under the streams resource create a new child resource with the Resource name {stream-name}
+![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>Resources.png)
+
+- Set up the GET method for {stream-name} resource
+  - Select the /{stream-name} resource
+  - Click the Create method button
+    - For Method type select GET
+    - For Integration type select AWS Service
+    - For AWS Region choose us-east-1
+    - For AWS Service select Kinesis
+    - For HTTP method select POST
+    - For Action Type select User action name
+    - For Action name enter DescribeStream
+    - For Execution role enter the ARN
+    - Click Create method
+  - Select the Integration Request panel under the GET resource
+    - Select Edit
+    - Expand the URL request headers parameters panel
+      - Click on the Add request header parameter button
+      - Under Name enter Content-Type
+      - Under Mapped form enter 'application/x-amz-json-1.1'
+    - Expand the Mapping Ttemplates panel
+      - Click on the Add mapping template button
+      - Under Cotent-Type enter application/json
+      - In the Template body include the following:
+
+        ```bash
+        {
+            "StreamName": "$input.params('stream-name')"
+        }
+        ```
+
+    - Click the Save button
+
+> [!Note]
+>
+> This template is designed to construct an input payload for sending data to an AWS Kinesis stream. It expects the client to provide the stream-name as a parameter in the API request, and it uses this parameter to populate the StreamName field in the output payload.
+>
+>- The $input variable represents the entire input payload received by the API Gateway
+>- The params('stream-name') function is used to retrieve the value of the stream-name parameter from the API request. This parameter should have been defined in the API's method request configuration, either as a query parameter, path parameter, or header parameter.
+>- The retrieved value of the stream-name parameter is then used to populate the StreamName field in the output payload
+
+- Set up the POST method for {stream-name} resource
+  - Select the /{stream-name} resource
+  - Click the Create method button
+    - For Method type select POST
+    - For Integration type select AWS Service
+    - For AWS Region choose us-east-1
+    - For AWS Service select Kinesis
+    - For HTTP method select POST
+    - For Action Type select User action name
+    - For Action name enter CreateStream
+    - For Execution role enter the ARN
+    - Click Create method
+  - Select the Integration Request panel under the POST resource
+    - Select Edit
+    - Expand the URL request headers parameters panel
+      - Click on the Add request header parameter button
+      - Under Name enter Content-Type
+      - Under Mapped form enter 'application/x-amz-json-1.1'
+    - Expand the Mapping Ttemplates panel
+      - Click on the Add mapping template button
+      - Under Cotent-Type enter application/json
+      - In the Template body include the following:
+
+        ```bash
+        {
+            "ShardCount": #if($input.path('$.ShardCount') == '') 5 #else $input.path('$.ShardCount') #end,
+            "StreamName": "$input.params('stream-name')"
+        }
+        ```
+
+    - Click the Save button
+
+> [!Note]
+>
+>- "ShardCount":: This is the key for the field that will hold the value of the shard count in the output payload
+>- #if($input.path('$.ShardCount') == ''): This is a conditional statement that checks whether the "ShardCount" field is empty in the input payload
+>- 5: This is the default value to be used for "ShardCount" in case the input payload doesn't have a value for it. In this example, if the "ShardCount" field is empty, it will be set to 5.
+>- #else $input.path('$.ShardCount'): If the "ShardCount" field is not empty in the input payload, this part of the conditional statement will be executed. It retrieves the value of "ShardCount" from the input payload using the $input.path() function.
+>- "StreamName": "$input.params('stream-name')": This is similar to what we discussed in the previous example. It sets the "StreamName" field in the output payload by retrieving the value of the "stream-name" parameter from the API request.
+>
+>To summarize, this mapping template does the following:
+>
+>- If the input payload contains a non-empty "ShardCount" field, it sets the "ShardCount" field in the output payload to the same value
+>- If the input payload does not contain a "ShardCount" field or if it is empty, it sets the "ShardCount" field in the output payload to a default value of 5
+>- It sets the "StreamName" field in the output payload based on the value of the "stream-name" parameter provided in the API request
+
+- Set up the DELETE method for {stream-name} resource
+  - Select the /{stream-name} resource
+  - Click the Create method button
+    - For Method type select DELETE
+    - For Integration type select AWS Service
+    - For AWS Region choose us-east-1
+    - For AWS Service select Kinesis
+    - For HTTP method select POST
+    - For Action Type select User action name
+    - For Action name enter DeleteStream
+    - For Execution role enter the ARN
+    - Click Create method
+  - Select the Integration Request panel under the DELETE resource
+    - Select Edit
+    - Expand the URL request headers parameters panel
+      - Click on the Add request header parameter button
+      - Under Name enter Content-Type
+      - Under Mapped form enter 'application/x-amz-json-1.1'
+    - Expand the Mapping Ttemplates panel
+      - Click on the Add mapping template button
+      - Under Cotent-Type enter application/json
+      - In the Template body include the following:
+
+        ```bash
+        {
+            "StreamName": "$input.params('stream-name')"
+        }
+        ```
+
+    - Click the Save button
+
+![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>GET_POST_DELETE.png)
+
+- Under the `/{stream-name}` resource select `Create resource` to create a new child resource
+  - Under `Resource Name` enter `record`
+  - Click `Create resource` 
+- Set up the PUT method for `/record` resource
+  - Select the `/record` resource
+  - Click the `Create method` button
+    - For `Method type` select `PUT`
+    - For `Integration type` select `AWS Service`
+    - For `AWS Region` choose `us-east-1`
+    - For `AWS Service` select `Kinesis`
+    - For `HTTP method` select `POST`
+    - For `Action Type` select `User action name`
+    - For `Action name` enter `PutRecord`
+    - For `Execution role` enter the `ARN`
+    - Click `Create method`
+  - Select the `Integration request` panel under the `PUT` resource
+    - Select `Edit`
+    - Expand the `URL request headers parameters` panel
+      - Click on the `Add request header parameter` button
+      - Under `Name` enter `Content-Type`
+      - Under `Mapped form` enter `'application/x-amz-json-1.1'`
+    - Expand the `Mapping Ttemplates` panel
+      - Click on the `Add mapping template` button
+      - Under `Cotent-Type` enter `application/json`
+      - In the `Template body` include the following:
+
+        ```bash
+        {
+            "StreamName": "$input.params('stream-name')",
+            "Data": "$util.base64Encode($input.json('$.Data'))",
+            "PartitionKey": "$input.path('$.PartitionKey')"
+        }
+        ```
+
+    - Click the `Save` button
+
+> [!Note]
+>
+>This mapping template is used to transform an API request payload into the format required for writing a single record to an AWS Kinesis stream. Let's go through it step by step:
+>
+>- "StreamName": "$input.params('stream-name')": This sets the "StreamName" field in the output payload to the value of the "stream-name" parameter provided in the API request. This part is similar to previous examples.
+>- "Data": "$util.base64Encode($input.json('$.Data'))": This line sets the "Data" field in the output payload. It uses the $input.json() function to retrieve the value of the "Data" field from the input payload. The value is then encoded in Base64 format using the $util.base64Encode() function. Kinesis requires the data to be in Base64 format when writing records.
+>- "PartitionKey": "$input.path('$.PartitionKey')": This line sets the "PartitionKey" field in the output payload. It uses the $input.path() function to retrieve the value of the "PartitionKey" field from the input payload.
+To summarise, this mapping template does the following:
+>- It sets the "StreamName" field in the output payload based on the value of the "stream-name" parameter provided in the API request
+>- It retrieves the value of the "Data" field from the input payload and encodes it in Base64 format, which is required for writing to a Kinesis stream
+>- It retrieves the value of the "PartitionKey" field from the input payload
+
+- Under the `/{stream-name}` resource select `Create resource` to create another new child resource
+  - Under `Resource Name` enter `records`
+  - Click `Create resource`
+- Set up the PUT method for `/record` resource
+  - Select the `/record` resource
+  - Click the `Create method` button
+    - For `Method type` select `PUT`
+    - For `Integration type` select `AWS Service`
+    - For `AWS Region` choose `us-east-1`
+    - For `AWS Service` select `Kinesis`
+    - For `HTTP method` select `POST`
+    - For `Action Type` select `User action name`
+    - For `Action name` enter `PutRecords`
+    - For `Execution role` enter the `ARN`
+    - Click `Create method`
+  - Select the `Integration request` panel under the `PUT` resource
+    - Select `Edit`
+    - Expand the `URL request headers parameters` panel
+      - Click on the `Add request header parameter` button
+      - Under `Name` enter `Content-Type`
+      - Under `Mapped form` enter `'application/x-amz-json-1.1'`
+    - Expand the `Mapping Ttemplates` panel
+      - Click on the `Add mapping template` button
+      - Under `Cotent-Type` enter `application/json`
+      - In the `Template body` include the following:
+
+        ```bash
+        {
+            "StreamName": "$input.params('stream-name')",
+            "Records": [
+            #foreach($elem in $input.path('$.records'))
+                {
+                    "Data": "$util.base64Encode($elem.data)",
+                    "PartitionKey": "$elem.partition-key"
+                }#if($foreach.hasNext),#end
+                #end
+            ]
+        }
+        ```
+
+    - Click the `Save` button
+
+> [!Note]
+>
+> This mapping template is used to transform an API request payload into the format required for writing records to an AWS Kinesis stream. Let's break it down step by step:
+>
+>- "StreamName": "$input.params('stream-name')": This sets the "StreamName" field in the output payload to the value of the "stream-name" parameter provided in the API request. This is similar to what we have seen in previous examples.
+>- "Records": [...]: This is an array key in the output payload that will hold an array of records to be written to the Kinesis stream
+>- #foreach($elem in $input.path('$.records')): This is a loop that iterates over each element (record) in the "records" array from the input payload. The $input.path() function retrieves the value of "records" array from the input payload.
+>- "Data": "$util.base64Encode($elem.data)": For each record in the "records" array, this line sets the "Data" field in the output payload. It uses the $elem.data syntax to access the "data" field of the current record. It then applies the $util.base64Encode() function to encode the data in Base64 format, which is the expected format for the data when writing to a Kinesis stream.
+>- "PartitionKey": "$elem.partition-key": This line sets the "PartitionKey"field in the output payload for each record. It uses the $elem.partition-key syntax to access the "partition-key" field of the current record.
+>- #if($foreach.hasNext),#end: This conditional statement adds a comma (,) after each record except the last one. This is required to ensure that the output JSON is formatted correctly as an array.
+>- #end: This marks the end of the loop
+To summarise, this mapping template does the following:
+>- It sets the "StreamName" field in the output payload based on the value of the "stream-name" parameter provided in the API request
+>- It iterates over the "records" array in the input payload and constructs an array of records in the output payload, where each record includes the encoded "Data" and "PartitionKey" fields required for writing to a Kinesis stream
+
+![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>Resources_all.png)
+
+Now that API has been updated, the Python requests library can be used to test the new API methods and obtain a response.
+
+- Click `Deploy API` button to deploy the newest version of the API
+ and use the correct API Invoke URL.
+
+📝 - Walkthrough End
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+### Send data to the Kinesis streams
+
+### Read data from Kinesis streams in Databricks
+
+### Transform Kinesis streams in Databricks
+
+### Write the streaming data to Delta Tables
