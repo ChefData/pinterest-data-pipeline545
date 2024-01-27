@@ -7,7 +7,8 @@ import logging, json, requests, uuid
 
 
 # Configure the logging module
-logging.basicConfig(level=logging.INFO)
+log_level: int = logging.INFO
+logging.basicConfig(level=log_level)
 
 class APICommunicator:
     """
