@@ -34,7 +34,7 @@ class S3DataLoader:
 
         Raises:
         - FileNotFoundError: If there is an issue loading AWS keys.
-        - Exception: If there is an issue initializing the S3DataLoader.
+        - Exception: If there is an issue initialising the S3DataLoader.
         """
         self.spark: SparkSession = SparkSession.builder.appName("S3DataLoader").getOrCreate()
         self.credentials_path: str = credentials_path
