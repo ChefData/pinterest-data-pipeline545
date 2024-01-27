@@ -102,7 +102,7 @@ class RDSDBConnector:
             # Check if all required keys are present in the credentials
             self.__validate_db_creds(db_creds)
             # Create a SQLAlchemy database URL
-            db_url: URL = self._build_url_object(db_creds)
+            db_url: URL = self.__build_url_object(db_creds)
             # Initialise the database engine
             engine = create_engine(db_url)
             return engine
