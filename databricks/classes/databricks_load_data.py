@@ -268,5 +268,5 @@ class S3DataLoader:
     def clear_delta_tables(self) -> None:
         for topic in self.topics:
             table_name = f"{self.iam_username}_{topic}_table"
-            dbutils.fs.rm(f"/tmp/kinesis/{table_name}_checkpoints/")
+            dbutils.fs.rm(f"/tmp/kinesis/{table_name}_checkpoints/", True)
 

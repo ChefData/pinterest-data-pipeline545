@@ -4,51 +4,54 @@
 # MAGIC
 # MAGIC Apache Spark is a powerful open-source distributed computing system that provides fast and general-purpose cluster computing for big data processing.
 # MAGIC
-# MAGIC Databricks, on the other hand, is a cloud-based platform built on top of Apache Spark, making it easier to deploy and manage Spark clusters. Databricks provides a unified analytics platform that can process large amounts of data quickly. Databricks provides an optimised and managed Spark environment.
+# MAGIC Databricks, on the other hand, is a cloud-based platform built on top of Apache Spark, making it easier to deploy and manage Spark clusters. 
+# MAGIC Databricks provides a unified analytics platform that can process large amounts of data quickly. 
+# MAGIC Databricks provides an optimised and managed Spark environment.
 # MAGIC
 # MAGIC To clean and query the data from the three Kafka topics, the S3 bucket will be mounted to a Databricks account. Within Databricks three DataFrames will be created to hold this data:
 # MAGIC
-# MAGIC - df_pin for the Pinterest post data
-# MAGIC - df_geo for the geolocation data
-# MAGIC - df_user for the user data.
+# MAGIC - `df_pin` for the Pinterest post data
+# MAGIC - `df_geo` for the geolocation data
+# MAGIC - `df_user` for the user data.
 # MAGIC
 # MAGIC This notebook will falcitate the following procedures:
 # MAGIC
-# MAGIC - Load batch data
-# MAGIC - Clean batch data
-# MAGIC - Query batch data
+# MAGIC - Load the batch data
+# MAGIC - Clean the batch data
+# MAGIC - Query the batch data
 # MAGIC
-# MAGIC This notebook uses the mounting methods and dataframe creation methods from the databricks_mount_data.py file loacted in the **classes** folder. Thi s notebook also use the dataframe cleaning methods from the databricks_clean_data.py file also located in the **classes** folder.
+# MAGIC This notebook uses the ***mounting*** methods and dataframe creation methods from the `databricks_load_data` notebook located in the `classes` folder.
 # MAGIC
+# MAGIC This notebook also uses the dataframe cleaning methods from the `databricks_clean_data` file also located in the `classes` folder.
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### Import loading methods 
 # MAGIC
-# MAGIC The following cell allows access to the methods from the S3DataLoader class within the databricks_load_data notebook.
+# MAGIC The following cell allows access to the methods from the `S3DataLoader` class within the `databricks_load_data` notebook.
 
 # COMMAND ----------
 
-# MAGIC %run "./databricks_load_data"
+# MAGIC %run "./classes/databricks_load_data"
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC #### Import cleaning methods
 # MAGIC
-# MAGIC The following cell allows access to the methods from the DataCleaning class within the databricks_clean_data notebook
+# MAGIC The following cell allows access to the methods from the `DataCleaning` class within the `databricks_clean_data` notebook
 
 # COMMAND ----------
 
-# MAGIC %run "./databricks_clean_data"
+# MAGIC %run "./classes/databricks_clean_data"
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Instantiate S3DataLoader
+# MAGIC #### Instantiate S3DataLoader and DataCleaning
 # MAGIC
-# MAGIC The following cell instantiates the required variables for the S3DataLoader class.
+# MAGIC The following cell instantiates the required variables for the `S3DataLoader` class and `DataCleaning` class.
 
 # COMMAND ----------
 
@@ -63,6 +66,14 @@ if __name__ == "__main__":
 
 # MAGIC %md
 # MAGIC ## Load Batch Data
+# MAGIC
+# MAGIC Databricks enables users to mount cloud object storage to the Databricks File System (DBFS) to simplify data access patterns.
+# MAGIC
+# MAGIC Databricks mounts create a link between a workspace and cloud object storage, which enables interaction with cloud object storage using familiar file paths relative to the Databricks file system. Mounts work by creating a local alias under the /mnt directory that stores the following information:
+# MAGIC
+# MAGIC - Location of the cloud object storage.
+# MAGIC - Driver specifications to connect to the storage account or container.
+# MAGIC - Security credentials required to access the data.
 
 # COMMAND ----------
 
@@ -113,14 +124,14 @@ if __name__ == "__main__":
 # MAGIC %md
 # MAGIC #### Clean df.pin
 # MAGIC
-# MAGIC To clean the df_pin DataFrame the following cell will perform the following transformations:
+# MAGIC To clean the `df_pin` DataFrame the following cell will perform the following transformations:
 # MAGIC
-# MAGIC - Replace empty entries and entries with no relevant data in each column with Nones
-# MAGIC - Perform the necessary transformations on the follower_count to ensure every entry is a number. Make sure the data type of this column is an int.
-# MAGIC - Ensure that each column containing numeric data has a numeric data type
-# MAGIC - Clean the data in the save_location column to include only the save location path
-# MAGIC - Rename the index column to ind.
-# MAGIC - Reorder the DataFrame columns to have the following column order: (ind, unique_id, title, description, follower_count, poster_name, tag_list, is_image_or_video, image_src, save_location, category) 
+# MAGIC - Replace empty entries and entries with no relevant data in each column with `Nones`
+# MAGIC - Perform the necessary transformations on the `follower_count` to ensure every entry is a number. Make sure the data type of this column is an `int`.
+# MAGIC - Ensure that each column containing numeric data has a `numeric` data type
+# MAGIC - Clean the data in the `save_location` column to include only the save location path
+# MAGIC - Rename the `index` column to `ind`.
+# MAGIC - Reorder the DataFrame columns to have the following column order: (`ind`, `unique_id`, `title`, `description`, `follower_count`, `poster_name`, `tag_list`, `is_image_or_video`, `image_src`, `save_location`, `category`) 
 
 # COMMAND ----------
 
@@ -142,12 +153,12 @@ if __name__ == "__main__":
 # MAGIC %md
 # MAGIC #### Clean df.geo
 # MAGIC
-# MAGIC To clean the df_geo DataFrame the follwoing cell will perform the following transformations:
+# MAGIC To clean the `df_geo` DataFrame the follwoing cell will perform the following transformations:
 # MAGIC
-# MAGIC - Create a new column coordinates that contains an array based on the latitude and longitude columns
-# MAGIC - Drop the latitude and longitude columns from the DataFrame
-# MAGIC - Convert the timestamp column from a string to a timestamp data type
-# MAGIC - Reorder the DataFrame columns to have the following column order: (ind, country, coordinates, timestamp)
+# MAGIC - Create a new column `coordinates` that contains an array based on the `latitude` and `longitude` columns
+# MAGIC - Drop the `latitude` and `longitude` columns from the DataFrame
+# MAGIC - Convert the `timestamp` column from a `string` to a `timestamp` data type
+# MAGIC - Reorder the DataFrame columns to have the following column order: (`ind`, `country`, `coordinates`, `timestamp`)
 # MAGIC
 
 # COMMAND ----------
@@ -170,13 +181,12 @@ if __name__ == "__main__":
 # MAGIC %md
 # MAGIC #### Clean df.user
 # MAGIC
-# MAGIC To clean the df_user DataFrame the following cell will perform the following transformations:
+# MAGIC To clean the `df_user` DataFrame the following cell will perform the following transformations:
 # MAGIC
-# MAGIC - Create a new column user_name that concatenates the information found in the first_name and last_name columns
-# MAGIC - Drop the first_name and last_name columns from the DataFrame
-# MAGIC - Convert the date_joined column from a string to a timestamp data type
-# MAGIC - Reorder the DataFrame columns to have the following column order: (ind, user_name, age, date_joined)
-# MAGIC
+# MAGIC - Create a new column user_name that concatenates the information found in the `first_name` and `last_name` columns
+# MAGIC - Drop the `first_name` and `last_name` columns from the DataFrame
+# MAGIC - Convert the `date_joined` column from a `string` to a `timestamp` data type
+# MAGIC - Reorder the DataFrame columns to have the following column order: (`ind`, `user_name`, `age`, `date_joined`)
 
 # COMMAND ----------
 
@@ -198,11 +208,11 @@ if __name__ == "__main__":
 # MAGIC %md
 # MAGIC ## Query Batch Data
 # MAGIC
-# MAGIC Before querieing the data the three dataframes (df_pin, df_geo, and df_user) are joined together on the common column heading 'ind'.
+# MAGIC Before querieing the data the three dataframes (`df_pin`, `df_geo`, and `df_user`) are joined together on the common column heading `ind`.
 # MAGIC
-# MAGIC To make sure that df_all is a valid DataFrame it will be created and registered as a temporary table or view before executing any SQL queries. To do this df_all is registered as a temporary view using df_all.createOrReplaceTempView("df_all").
+# MAGIC To make sure that `df_all` is a valid DataFrame it will be created and registered as a temporary table or view before executing any SQL queries. To do this `df_all` is registered as a temporary view using `df_all.createOrReplaceTempView("df_all")`.
 # MAGIC
-# MAGIC However df_all is a non-Delta table with many small files. Therefore to improve the performance of queries, df_all has been converted to Delta with the OPTIMIZE command. The new df_optimised table will accelerate queries.
+# MAGIC However `df_all` is a non-Delta table with many small files. Therefore to improve the performance of queries, `df_all` has been converted to Delta. The new `df_all` table will accelerate queries.
 
 # COMMAND ----------
 
@@ -231,7 +241,7 @@ if __name__ == "__main__":
 # MAGIC #### Question 1: Find the most popular category in each country
 # MAGIC
 # MAGIC - Find the most popular Pinterest category people post to based on their country.
-# MAGIC - The query should return a DataFrame that contains the following columns: (country, category, category_count)
+# MAGIC - The query should return a DataFrame that contains the following columns: (`country`, `category`, `category_count`)
 # MAGIC
 
 # COMMAND ----------
@@ -259,8 +269,7 @@ display(top_category_per_country)
 # MAGIC #### Question 2: Find which was the most popular category each year
 # MAGIC
 # MAGIC - Find how many posts each category had between 2018 and 2022.
-# MAGIC - The query will return a DataFrame that contains the following columns: (post_year, category, category_count)
-# MAGIC
+# MAGIC - The query will return a DataFrame that contains the following columns: (`post_year`, `category`, `category_count`)
 
 # COMMAND ----------
 
@@ -287,9 +296,9 @@ display(top_category_per_year)
 # MAGIC #### Question 3: Find the user with most followers in each country
 # MAGIC
 # MAGIC - Step 1: For each country find the user with the most followers.
-# MAGIC   - Your query should return a DataFrame that contains the following columns: (country, poster_name, follower_count)
+# MAGIC   - Your query should return a DataFrame that contains the following columns: (`country`, `poster_name`, `follower_count`)
 # MAGIC - Step 2: Based on the above query, find the country with the user with most followers.
-# MAGIC   - Your query should return a DataFrame that contains the following columns: (country, follower_count)
+# MAGIC   - Your query should return a DataFrame that contains the following columns: (`country`, `follower_count`)
 # MAGIC   - This DataFrame should have only one entry.
 
 # COMMAND ----------
@@ -324,8 +333,8 @@ display(country_with_top_user)
 # MAGIC %md
 # MAGIC #### Question 4: Find the most popular category for different age groups
 # MAGIC
-# MAGIC - What is the most popular category people post to based on the following age groups: (18-24, 25-35, 36-50, +50)
-# MAGIC - The query should return a DataFrame that contains the following columns: (age_group, category, category_count)
+# MAGIC - What is the most popular category people post to based on the following age groups: (`18-24`, `25-35`, `36-50`, `+50`)
+# MAGIC - The query should return a DataFrame that contains the following columns: (`age_group`, `category`, `category_count`)
 
 # COMMAND ----------
 
@@ -364,8 +373,8 @@ display(top_category_per_age)
 # MAGIC %md
 # MAGIC #### Question 5: Find the median follower count for different age groups
 # MAGIC
-# MAGIC - What is the median follower count for users in the following age groups: (18-24, 25-35, 36-50, +50)
-# MAGIC - The query should return a DataFrame that contains the following columns: (age_group, median_follower_count)
+# MAGIC - What is the median follower count for users in the following age groups: (`18-24`, `25-35`, `36-50`, `+50`)
+# MAGIC - The query should return a DataFrame that contains the following columns: (`age_group`, `median_follower_count`)
 # MAGIC
 
 # COMMAND ----------
@@ -392,7 +401,7 @@ display(median_follower_per_age_group)
 # MAGIC #### Question 6: Find how many users have joined each year?
 # MAGIC
 # MAGIC - Find how many users have joined between 2015 and 2020.
-# MAGIC - The query should return a DataFrame that contains the following columns: (post_year, number_users_joined)
+# MAGIC - The query should return a DataFrame that contains the following columns: (`post_year`, `number_users_joined`)
 
 # COMMAND ----------
 
@@ -412,7 +421,7 @@ display(users_joined_per_year)
 # MAGIC #### Question 7: Find the median follower count of users based on their joining year
 # MAGIC
 # MAGIC - Find the median follower count of users have joined between 2015 and 2020.
-# MAGIC - Your query should return a DataFrame that contains the following columns: (post_year, median_follower_count)
+# MAGIC - Your query should return a DataFrame that contains the following columns: (`post_year`, `median_follower_count`)
 
 # COMMAND ----------
 
@@ -432,7 +441,7 @@ display(median_follower_per_join_year)
 # MAGIC #### Question 8: Find the median follower count of users based on their joining year and age group
 # MAGIC
 # MAGIC - Find the median follower count of users that have joined between 2015 and 2020, based on which age group they are part of.
-# MAGIC - The query should return a DataFrame that contains the following columns: (age_group, post_year, median_follower_count)
+# MAGIC - The query should return a DataFrame that contains the following columns: (`age_group`, `post_year`, `median_follower_count`)
 
 # COMMAND ----------
 

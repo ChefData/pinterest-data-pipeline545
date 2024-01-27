@@ -14,7 +14,7 @@ default_args = {
 }
 
 dag_id = '0ab336d6fcf7_dag'
-start_date = datetime(2024, 1, 23)
+start_date = datetime(2024, 1, 27)
 
 # The next section of our DAG script actually instantiates the DAG.
 with DAG(dag_id,
@@ -31,8 +31,11 @@ with DAG(dag_id,
 
     # Define tasks using a loop
     notebook_tasks = [
-        {'task_id': 'load_data_direct', 'notebook_path': '/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/databricks_query_data_direct'},
-        {'task_id': 'load_data_mount', 'notebook_path': '/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/databricks_query_data_mount'},
+        {'task_id': 'load_data', 'notebook_path': '/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/airflow/airflow_load_data'},
+        {'task_id': 'clean_pin_data', 'notebook_path': '/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/airflow/airflow_clean_pin'},
+        {'task_id': 'clean_geo_data', 'notebook_path': '/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/airflow/airflow_clean_geo'},
+        {'task_id': 'clean_user_data', 'notebook_path': '/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/airflow/airflow_clean_user'},
+        {'task_id': 'query_data', 'notebook_path': '/Repos/nickwarmstrong@gmail.com/pinterest-data-pipeline545/databricks/airflow/airflow_query_data'},
     ]
 
     operators = []
@@ -43,8 +46,5 @@ with DAG(dag_id,
         operators.append(operator)
 
     # Set task dependencies
-    # operators[0] >> operators[1] >> operators[2]
-    # operators[0] >> [operators[1] >> operators[2]] >> operators[3]
-    operators[0]
-    operators[1]
+    operators[0] >> [operators[1], operators[2], operators[3]] >> operators[4]
 
