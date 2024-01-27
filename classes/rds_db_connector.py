@@ -1,6 +1,7 @@
 from decouple import config
 from sqlalchemy import create_engine, URL
 from sqlalchemy.exc import SQLAlchemyError
+from typing import Dict, List
 import yaml
 
 
@@ -11,14 +12,17 @@ class RDSDBConnector:
 
     def __init__(self) -> None:
         """
-        Initializes a DatabaseConnector object.
+        Initialises a DatabaseConnector object.
 
-        Reads database credentials from a YAML file, validates them, and initializes the database engine.
+        Reads database credentials from a YAML file, validates them, and initialises the database engine.
         """
-        self.creds_file = config('creds_path')
-        self.db_engine = self._init_db_engine()
+        try:
+            self.creds_file: str = config('creds_path')
+            self.db_engine: create_engine = self._init_db_engine()
+        except Exception as error:
+            raise RuntimeError(f"Error during initialisation: {error}")
 
-    def __read_db_creds(self) -> dict:
+    def __read_db_creds(self) -> Dict[str, str]:
         """
         Reads database credentials from a YAML file.
 
@@ -40,7 +44,7 @@ class RDSDBConnector:
             raise yaml.YAMLError(f"Error: Unable to load YAML from '{self.creds_file}': {error}")
 
     @staticmethod
-    def __validate_db_creds(db_creds) -> None:
+    def __validate_db_creds(db_creds: Dict[str, str]) -> None:
         """
         Validates the database credentials.
 
@@ -50,12 +54,12 @@ class RDSDBConnector:
             ValueError: If any required key is missing in the credentials.
         """
         # Check if all required keys are present in the credentials
-        required_keys = ['USER', 'PASSWORD', 'HOST', 'PORT', 'DATABASE']
+        required_keys: List[str]  = ['USER', 'PASSWORD', 'HOST', 'PORT', 'DATABASE']
         if any(key not in db_creds for key in required_keys):
             raise ValueError("Error: Database credentials are missing or incomplete.")
 
     @staticmethod
-    def __build_url_object(db_creds) -> URL:
+    def __build_url_object(db_creds: Dict[str, str]) -> URL:
         """
         Builds a SQLAlchemy URL object from database credentials.
 
@@ -84,21 +88,21 @@ class RDSDBConnector:
 
     def _init_db_engine(self) -> create_engine:
         """
-        Initializes the database engine.
+        Initialises the database engine.
 
         Reads database credentials, validates them, builds a URL object, and creates the database engine.
         Returns:
             create_engine: A SQLAlchemy database engine.
         Raises:
-            SQLAlchemyError: If there is an error initializing the database engine.
+            SQLAlchemyError: If there is an error initialising the database engine.
         """
         try:
             # Read database credentials from the YAML file
-            db_creds = self.__read_db_creds()
+            db_creds: Dict[str, str] = self.__read_db_creds()
             # Check if all required keys are present in the credentials
             self.__validate_db_creds(db_creds)
             # Create a SQLAlchemy database URL
-            db_url = self.__build_url_object(db_creds)
+            db_url: URL = self._build_url_object(db_creds)
             # Initialise the database engine
             engine = create_engine(db_url)
             return engine
