@@ -6,7 +6,7 @@ Consumer/
 # File Extensions
 *.env
 *.pem
-*.yaml
 *.DS_Store
 
 # Individual Files
+creds.yaml
