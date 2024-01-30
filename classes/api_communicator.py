@@ -12,7 +12,7 @@ logging.basicConfig(level=log_level)
 
 class APICommunicator:
     """
-    A class for communicating with an API and sending data to Kafka topics.
+    A class for communicating with an API and sending data to Kafka topics or Kinesis streams.
     """
 
     def __init__(self) -> None:
@@ -83,7 +83,7 @@ class APICommunicator:
         - url (str): The endpoint URL.
         - payload_dict (dict): The data to be sent to the endpoint.
         - headers (dict): The headers for the request.
-        - topic_name (str): The name of the Kafka topic or stream.
+        - topic_name (str): The name of the Kafka topic or Kinesis stream.
 
         Returns:
         - None
@@ -114,11 +114,11 @@ class APICommunicator:
 
     def _send_data_stream_to_api(self, topic_name: str, data: Dict) -> None:
         """
-        Sends data to a specified Kafka stream through the configured API.
+        Sends data to a specified Kinesis stream through the configured API.
 
         Parameters:
-        - topic_name (str): The name of the Kafka stream.
-        - data (dict): The data to be sent to the Kafka stream.
+        - topic_name (str): The name of the Kinesis stream.
+        - data (dict): The data to be sent to the Kinesis stream.
         """
         method = 'PUT'
         stream_name = f"streaming-{self.iam_username}-{topic_name}"
