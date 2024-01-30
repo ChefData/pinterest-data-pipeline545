@@ -154,7 +154,7 @@ class S3DataLoader:
     
     def create_dataframes(self, mounted: bool = True) -> None:
         """
-        Optimise and create global DataFrames from JSON files in the S3 bucket.
+        Create global DataFrames from JSON files in the S3 bucket.
 
         Parameters:
         - mounted (bool): Flag to indicate if the S3 bucket is already mounted. Defaults to True.
