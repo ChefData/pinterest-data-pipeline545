@@ -1,11 +1,11 @@
 # Walkthrough of Pinterest Data Pipeline Project: Part 6
 
-Pinterest crunches billions of data points every day to decide how to provide more value to their users.
+Pinterest crunches billions of data points daily to decide how to provide more value to its users.
 
-This walkthrough will describe the process taken to emulate Pinterests system of processing data using the AWS Cloud. This walkthrough will explain the following:
+This walkthrough will describe using the AWS Cloud to emulate Pinterest's data processing system. This walkthrough will explain the following:
 
 - [Part 1](Walkthrough_part_1_EC2_Kafka) will describe how to configure a `EC2 Kafka client`
-- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect a `MSK cluster` to a `S3 bucket`
+- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect an `MSK cluster` to an `S3 bucket`
 - [Part 3](Walkthrough_part_3_API) will describe how to configure an `API` in `API Gateway`
 - [Part 4](Walkthrough_part_4_ETL_Databricks) will describe how to read, clean and query data on `Databricks`
 - [Part 5](Walkthrough_part_5_Airflow) will describe how to orchestrate `Databricks` Workloads on `MWAA`
@@ -23,24 +23,24 @@ This walkthrough will describe the process taken to emulate Pinterests system of
   - [Configure an API with Kinesis proxy integration](#configure-an-api-with-kinesis-proxy-integration)
     - [Set permissions to invoke Kinesis actions](#set-permissions-to-invoke-kinesis-actions)
     - [Create streams resource](#create-streams-resource)
-    - [Create GET method for streams resource](#create-get-method-for-streams-resource)
-    - [Configure GET method for streams resource](#configure-get-method-for-streams-resource)
+    - [Create a GET method for streams resource](#create-a-get-method-for-streams-resource)
+    - [Configure the GET method for streams resource](#configure-the-get-method-for-streams-resource)
     - [Create {stream-name} child resource](#create-stream-name-child-resource)
-    - [Create GET method for {stream-name} child resource](#create-get-method-for-stream-name-child-resource)
-    - [Configure GET method for {stream-name} child resource](#configure-get-method-for-stream-name-child-resource)
-    - [Create POST method for {stream-name} child resource](#create-post-method-for-stream-name-child-resource)
-    - [Configure POST method for {stream-name} child resource](#configure-post-method-for-stream-name-child-resource)
-    - [Create DELETE method for {stream-name} child resource](#create-delete-method-for-stream-name-child-resource)
-    - [Configure DELETE method for {stream-name} child resource](#configure-delete-method-for-stream-name-child-resource)
+    - [Create a GET method for {stream-name} child resource](#create-a-get-method-for-stream-name-child-resource)
+    - [Configure the GET method for {stream-name} child resource](#configure-the-get-method-for-stream-name-child-resource)
+    - [Create a POST method for {stream-name} child resource](#create-a-post-method-for-stream-name-child-resource)
+    - [Configure the POST method for {stream-name} child resource](#configure-the-post-method-for-stream-name-child-resource)
+    - [Create a DELETE method for {stream-name} child resource](#create-a-delete-method-for-stream-name-child-resource)
+    - [Configure the DELETE method for {stream-name} child resource](#configure-the-delete-method-for-stream-name-child-resource)
     - [Create record child resource](#create-record-child-resource)
-    - [Create PUT method for record child resource](#create-put-method-for-record-child-resource)
-    - [Configure PUT method for record child resource](#configure-put-method-for-record-child-resource)
+    - [Create a PUT method for record child resource](#create-a-put-method-for-record-child-resource)
+    - [Configure the PUT method for record child resource](#configure-the-put-method-for-record-child-resource)
     - [Create records child resource](#create-records-child-resource)
-    - [Create PUT method for records child resource](#create-put-method-for-records-child-resource)
-    - [Configure PUT method for records child resource](#configure-put-method-for-records-child-resource)
-    - [Deploy API](#deploy-api)
+    - [Create a PUT method for records child resource](#create-a-put-method-for-records-child-resource)
+    - [Configure the PUT method for records child resource](#configure-the-put-method-for-records-child-resource)
+    - [Deploy the API](#deploy-the-api)
   - [Send data to the Kinesis streams](#send-data-to-the-kinesis-streams)
-    - [Visualise data coming into Kinesis Data Streams](#visualise-data-coming-into-kinesis-data-streams)
+    - [Visualise data coming into Kinesis Data Streams](# visualise-data-coming-into-kinesis-data-streams)
 - [Read and transform data from Kinesis streams in Databricks](#read-and-transform-data-from-kinesis-streams-in-databricks)
   -[Write the streaming data to Delta Tables](#write-the-streaming-data-to-delta-tables)
 - [Conclusion](#conclusion)
@@ -51,7 +51,7 @@ Real-time streaming data refers to the continuous flow of information that is ge
 
 This type of data is often generated by various sources such as sensors, social media feeds, financial transactions, and IoT devices. The data is transmitted in small, time-sensitive chunks or "streams," allowing for quick analysis and decision-making.
 
-Real-time streaming data is crucial in applications where timely insights and actions are essential, such as in financial trading, monitoring industrial processes, or analyzing social media trends. Technologies like Apache Kafka, Apache Flink, and Apache Spark Streaming are commonly used to handle and process real-time streaming data in different use cases.
+Real-time streaming data is crucial in applications where timely insights and actions are essential, such as in financial trading, monitoring industrial processes, or analysing social media trends. Technologies like Apache Kafka, Apache Flink, and Apache Spark Streaming are commonly used to handle and process real-time streaming data in different use cases.
 
 Pinterest utilises real-time streaming data to enhance user experience, provide personalised content, and improve the efficiency of its platform.
 
@@ -71,11 +71,11 @@ Pinterest utilises real-time streaming data to enhance user experience, provide 
 
 ## Apache Spark Structured Streaming
 
-Apache Spark Structured Streaming is a near-real time processing engine that offers end-to-end fault tolerance with exactly-once processing guarantees using familiar Spark APIs. Structured Streaming lets you express computation on streaming data in the same way you express a batch computation on static data. The Structured Streaming engine performs the computation incrementally and continuously updates the result as streaming data arrives.
+Apache Spark Structured Streaming is a near-real-time processing engine that offers end-to-end fault tolerance with exact-once processing guarantees using familiar Spark APIs. Structured Streaming lets you express computation on streaming data in the same way you express batch computation on static data. The Structured Streaming engine performs the computation incrementally and continuously updates the result as streaming data arrives.
 
 It allows developers and data engineers to process and analyse real-time data using the same high-level, SQL-like programming constructs as batch processing in Apache Spark. Structured Streaming leverages the structured APIs provided by Apache Spark, including DataFrames and Datasets. This allows users to express their stream processing logic in a declarative and SQL-like manner, making it accessible to both SQL users and those familiar with traditional batch processing.
 
-One of the key advantages of Structured Streaming is its unified programming model for batch and streaming processing. Developers can use the same code to express transformations, aggregations, and analytics whether working with batch data or real-time streams.
+One of the key advantages of Structured Streaming is its unified programming model for batch and streaming processing. Developers can use the same code to express transformations, aggregations, and analytics, whether working with batch data or real-time streams.
 Databricks supports structured streaming, enabling real-time data processing and analytics. This project builds a continuous application that processes and analyses data as it arrives.
 
 ### Apache Delta Lake
@@ -84,7 +84,7 @@ Delta Lake is an open-source storage layer that brings ACID transactions to Apac
 
 ### AWS Kinesis
 
-Amazon Kinesis is a platform that enables real-time processing of streaming data at scale. It provides various services, such as Amazon Kinesis Streams, Amazon Kinesis Firehose, and Amazon Kinesis Analytics, which allow users to ingest, process, and analyse large volumes of data in real-time.
+Amazon Kinesis is a platform that enables real-time processing of streaming data at scale. It provides various services, such as Amazon Kinesis Streams, Amazon Kinesis Firehose, and Amazon Kinesis Analytics, which allow users to ingest, process, and analyse large volumes of data in real time.
 
 - Amazon Kinesis Streams allows you to collect and process real-time data streams.
 - Firehose simplifies the process of loading streaming data into AWS services.
@@ -96,18 +96,18 @@ Amazon Kinesis Streams enables real-time processing of streaming data at scale. 
 
 ## Streaming data to Kinesis
 
-The following walkthrough will describe the process to setup AWS Kinesis Data Streams in order to send streaming data and then read that data in Databricks for processing.
+The following walkthrough will describe the process of setting up AWS Kinesis Data Streams in order to send streaming data and then read that data in Databricks for processing.
 
 ### Create data streams using Kinesis Data Streams
 
-For this project three data streams were created using Kinesis Data Streams, one for each Pinterest table.
+For this project, three data streams were created using Kinesis Data Streams, one for each Pinterest table.
 
 Within the `AWS Kinesis` console:
 
-- Select `Data Streams` from the left hand panel.
+- Select `Data Streams` from the left-hand panel.
 - Click the `Create data stream` button
-- For this project the `Data stream name` will be `streaming-<USER_ID>-<TOPIC_SUFFIX>`
-- For this use case the `On-demand capacity mode` will be used.
+- For this project, the `Data stream name` will be `streaming-USER_ID-TOPIC_SUFFIX`
+- For this use case, the `On-demand capacity mode` will be used.
 - Click the `Create data stream` button
 
 Repeat these steps to create all three streams:
@@ -120,7 +120,7 @@ Repeat these steps to create all three streams:
 
 ### Configure an API with Kinesis proxy integration
 
-A REST API with an Amazon Kinesis proxy integration is required for this project. This intergration was built into the previously created REST API with Kafka REST proxy integration to allow it to invoke Kinesis actions.
+A REST API with an Amazon Kinesis proxy integration is required for this project. This integration was built into the previously created REST API with Kafka REST proxy integration to allow it to invoke Kinesis actions.
 
 The API is able to invoke the following actions:
 
@@ -132,11 +132,11 @@ The API is able to invoke the following actions:
 
 > [!Note]
 >
-> During this project the AWS account had been granted the necessary permissions to invoke Kinesis actions, so it was not neccessary to create an IAM role for the API to access Kinesis.
+> During this project, the AWS account had been granted the necessary permissions to invoke Kinesis actions, so it was not necessary to create an IAM role for the API to access Kinesis.
 
 Within the `IAM` console:
 
-- Select `Roles` from the left hand panel.
+- Select `Roles` from the left-hand panel.
 - Select the access role with the following structure: `<USER_ID>-kinesis-access-role`.
 - Copy the `ARN` of the Kinesis Access Role
 - This `ARN` will be used when setting up the Execution role for the integration point of all the methods created.
@@ -146,7 +146,7 @@ Within the `IAM` console:
 Within the `API Gateway` console:
 
 - Select the desired API
-- Select `Resources` from the left hand panel
+- Select `Resources` from the left-hand panel
 ![Alt text](README_Images/API_Gateway>APIs>Resources.png)
 - Click the `Create resource` button to start provisioning a new resource
 ![Alt text](README_Images/API_Gateway>APIs>Create_resource.png)
@@ -155,24 +155,24 @@ Within the `API Gateway` console:
 - Click the `Create resource` button
 ![Alt text](README_Images/API_Gateway>APIs>Resources>Streams.png)
 
-#### Create GET method for streams resource
+#### Create a GET method for streams resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
 - Select the `streams` resource
 - Select the `Create method` button
 - Select `GET` as the method type
-  - For `Integration type` select `AWS Service`
+  - For `Integration type`, select `AWS Service`
   - For `AWS Region` choose `us-east-1`
   - For `AWS Service` select `Kinesis`
   - For `HTTP method` select `POST` (to invoke Kinesis's ListStreams action)
   - For `Action Type` select `User action name`
-  - For `Action name` enter `ListStreams`
-  - For `Execution role` copy the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
+  - For `Action name`, enter `ListStreams`
+  - For the `Execution role` copy the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
   - Click `Create method` to finalise provisioning this method
   ![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>GET.png)
 
-#### Configure GET method for streams resource
+#### Configure the GET method for streams resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
@@ -194,30 +194,30 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
-- Under the `streams` resource create a new child resource
+- Under the `streams` resource, create a new child resource
   - Click the `Create resource` button to start provisioning a new resource
   - Under `Resource Name`, type `{stream-name}`
   - Leave the rest as default
   - Click the `Create resource` button
   ![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>Resources.png)
 
-#### Create GET method for {stream-name} child resource
+#### Create a GET method for {stream-name} child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
 - Select the `/{stream-name}` resource
 - Click the `Create method` button
   - For `Method type` select `GET`
-  - For `Integration type` select `AWS Service`
+  - For `Integration type`, select `AWS Service`
   - For `AWS Region` choose `us-east-1`
   - For `AWS Service` select `Kinesis`
   - For `HTTP method` select `POST`
   - For `Action Type` select `User action name`
   - For `Action name` enter `DescribeStream`
-  - For `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
+  - For the `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
   - Click `Create method`
 
-#### Configure GET method for {stream-name} child resource
+#### Configure the GET method for {stream-name} child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
@@ -249,7 +249,7 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
 >
 > In simpler terms, this mapping template is saying, "Take the value of the parameter named 'stream-name' from the incoming request and assign it to the 'StreamName' property in the output JSON object." This mapped output can then be used in the AWS Kinesis integration, where the StreamName property would be populated with the value of the 'stream-name' parameter from the incoming request.
 
-#### Create POST method for {stream-name} child resource
+#### Create a POST method for {stream-name} child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
@@ -262,10 +262,10 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
   - For `HTTP method` select `POST`
   - For `Action Type` select `User action name`
   - For `Action name` enter `CreateStream`
-  - For `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
+  - For the `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
   - Click `Create method`
 
-#### Configure POST method for {stream-name} child resource
+#### Configure the POST method for {stream-name} child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
@@ -291,30 +291,30 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
 
 > [!Note]
 >
-> This mapping template, creates a JSON object with two properties: `"ShardCount"` and `"StreamName"`.
+> This mapping template creates a JSON object with two properties: `"ShardCount"` and `"StreamName"`.
 >
 > - `"ShardCount":` This property is dynamically set based on a conditional check. The #if directive is used to check if the value of $.ShardCount (ShardCount property in the incoming request JSON) is empty (''). If it is empty, the template assigns a default value of 5 to "ShardCount". If it's not empty, it takes the value of $.ShardCount.
 > - `"StreamName":` This property is assigned the value of the parameter named 'stream-name' from the incoming request using $input.params('stream-name').
 >
 > In summary, this mapping template is saying, "If the incoming request has a ShardCount property, use that value for 'ShardCount'. Otherwise, set 'ShardCount' to 5. Also, assign the value of the 'stream-name' parameter from the incoming request to the 'StreamName' property."
 
-#### Create DELETE method for {stream-name} child resource
+#### Create a DELETE method for {stream-name} child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
 - Select the `/{stream-name}` resource
 - Click the `Create method` button
-  - For `Method type` select `DELETE`
-  - For `Integration type` select `AWS Service`
+  - For `Method type`, select `DELETE`
+  - For `Integration type`, select `AWS Service`
   - For `AWS Region` choose `us-east-1`
   - For `AWS Service` select `Kinesis`
   - For `HTTP method` select `POST`
   - For `Action Type` select `User action name`
-  - For `Action name` enter `DeleteStream`
-  - For `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
+  - For `Action name`, enter `DeleteStream`
+  - For the `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
   - Click `Create method`
 
-#### Configure DELETE method for {stream-name} child resource
+#### Configure the DELETE method for {stream-name} child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
@@ -339,7 +339,7 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
 
 > [!Note]
 >
-> This mapping template, creates a JSON object with a single property: `"StreamName"`.
+> This mapping template creates a JSON object with a single property: `"StreamName"`.
 >
 > - `"StreamName":` This property is assigned the value of the parameter named 'stream-name' from the incoming request using $input.params('stream-name').
 >
@@ -351,29 +351,29 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
-- Under the `/{stream-name}` resource create a new child resource
+- Under the `/{stream-name}` resource, create a new child resource
   - Click the `Create resource` button to start provisioning a new resource
   - Under `Resource Name`, type `record`
   - Leave the rest as default
   - Click the `Create resource` button
 
-#### Create PUT method for record child resource
+#### Create a PUT method for record child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
 - Select the `/record` resource
 - Click the `Create method` button
   - For `Method type` select `PUT`
-  - For `Integration type` select `AWS Service`
+  - For `Integration type`, select `AWS Service`
   - For `AWS Region` choose `us-east-1`
   - For `AWS Service` select `Kinesis`
   - For `HTTP method` select `POST`
   - For `Action Type` select `User action name`
   - For `Action name` enter `PutRecord`
-  - For `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
+  - For the `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
   - Click `Create method`
 
-#### Configure PUT method for record child resource
+#### Configure the PUT method for record child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
@@ -383,9 +383,9 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
     - Click on the `Add request header parameter` button
     - Under `Name` enter `Content-Type`
     - Under `Mapped form` enter `'application/x-amz-json-1.1'`
-  - Expand the `Mapping Ttemplates` panel
+  - Expand the `Mapping Templates` panel
     - Click on the `Add mapping template` button
-    - Under `Cotent-Type` enter `application/json`
+    - Under `Content-Type` enter `application/json`
     - In the `Template body` include the following:
 
       ```bash
@@ -413,29 +413,29 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
-- Under the `/{stream-name}` resource create a new child resource
+- Under the `/{stream-name}` resource creates a new child resource
   - Click the `Create resource` button to start provisioning a new resource
   - Under `Resource Name`, type `records`
   - Leave the rest as default
   - Click the `Create resource` button
 
-#### Create PUT method for records child resource
+#### Create a PUT method for records child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
 - Select the `/record` resource
 - Click the `Create method` button
   - For `Method type` select `PUT`
-  - For `Integration type` select `AWS Service`
+  - For `Integration type`, select `AWS Service`
   - For `AWS Region` choose `us-east-1`
   - For `AWS Service` select `Kinesis`
   - For `HTTP method` select `POST`
   - For `Action Type` select `User action name`
   - For `Action name` enter `PutRecords`
-  - For `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
+  - For the `Execution role` enter the `ARN` of the Kinesis Access Role as described in the [Create data streams using Kinesis Data Streams](#create-data-streams-using-kinesis-data-streams)
   - Click `Create method`
 
-#### Configure PUT method for records child resource
+#### Configure the PUT method for records child resource
 
 Within the `Resources` page of the desired API in the `API Gateway` console:
 
@@ -445,9 +445,9 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
     - Click on the `Add request header parameter` button
     - Under `Name` enter `Content-Type`
     - Under `Mapped form` enter `'application/x-amz-json-1.1'`
-  - Expand the `Mapping Ttemplates` panel
+  - Expand the `Mapping Templates` panel
     - Click on the `Add mapping template` button
-    - Under `Cotent-Type` enter `application/json`
+    - Under `Content-Type` enter `application/json`
     - In the `Template body` include the following:
 
       ```bash
@@ -478,27 +478,27 @@ Within the `Resources` page of the desired API in the `API Gateway` console:
 >     - `"PartitionKey"`: This property is assigned the value of the `partition-key` property from each element in the `$.records` array using `"$elem.partition-key"`.
 > - The `#if($foreach.hasNext),#end` is used to include a comma after each record in the array except for the last one, ensuring proper JSON syntax.
 >
-> In summary, this mapping template is designed for handling multiple records, and preparing them for an AWS Kinesis integration. It takes the `'stream-name'` parameter as is and constructs an array of records, each with base64-encoded data and a partition key.
+> In summary, this mapping template is designed for handling multiple records and preparing them for an AWS Kinesis integration. It takes the `'stream-name'` parameter as is and constructs an array of records, each with base64-encoded data and a partition key.
 
 ![Alt text](README_Images/API_Gateway>APIs>Resources>Streams>Resources_all.png)
 
-#### Deploy API
+#### Deploy the API
 
-Click `Deploy API` button to deploy the newest version of the API.
+Click the `Deploy API` button to deploy the newest version of the API.
 
-Now that API has been updated, the Python requests library can be used to test the new API methods and obtain a response.
+Now that the API has been updated, the Python requests library can be used to test the new API methods and obtain a response.
 
 ### Send data to the Kinesis streams
 
-The Python script [rds_db_connector](classes/rds_db_connector.py) defines a class called `RDSDBConnector`, that facilitates connecting to a RDS database using the SQLAlchemy library. The purpose of this class is to encapsulate the process of reading database credentials from a YAML file, validating them, and initialising a SQLAlchemy database engine. This class provides a structured and reusable way to connect to a RDS database using SQLAlchemy, promoting separation of concerns by encapsulating database initialisation logic within the class.
+The Python script [rds_db_connector](classes/rds_db_connector.py) defines a class called `RDSDBConnector` that facilitates connecting to a RDS database using the SQLAlchemy library. The purpose of this class is to encapsulate the process of reading database credentials from a YAML file, validating them, and initialising a SQLAlchemy database engine. This class provides a structured and reusable way to connect to an RDS database using SQLAlchemy, promoting the separation of concerns by encapsulating database initialisation logic within the class.
 
-The Python script [api_communicator.py](classes/api_communicator.py) defines a class called `APICommunicator`, that is designed for communicating with an API and sending data to Kinesis stream.
+The Python script [api_communicator.py](classes/api_communicator.py) defines a class called `APICommunicator` that is designed for communicating with an API and sending data to the Kinesis stream.
 
 The Python script [aws_db_connector.py](classes/aws_db_connector.py) defines a class called `AWSDBConnector`, which is responsible for connecting to a database and sending data to an API. This script simulates a continuous process of fetching random data from a database and sending it to an API, allowing the user to choose between streaming or batch mode.
 
-The Python script [user_posting_emulation_stream.py](user_posting_emulation_stream.py) was built to emulate sending requests to the API, which adds one record at a time to the created streams. This script uses the methods from the three previously described classes. In streaming mode this script will continuously send new data from the three Pinterest tables to the corresponding Kinesis stream until interrupted.
+The Python script [user_posting_emulation_stream.py](user_posting_emulation_stream.py) was built to emulate sending requests to the API, which adds one record at a time to the created streams. This script uses the methods from the three previously described classes. In streaming mode, this script will continuously send new data from the three Pinterest tables to the corresponding Kinesis stream until interrupted.
 
-In terminal on your local machine:
+In the terminal on your local machine:
 
 - Navigate to the project directory:
 
@@ -520,12 +520,12 @@ Once data has been sent to a Kinesis Data Stream, this data can be visualised in
 
 Within the `AWS Kinesis` console:
 
-- Select `Data Streams` from the left hand panel.
+- Select `Data Streams` from the left-hand panel.
 - Select the desired stream
 - Select the `Data viewer` panel
 - Choose the `Shard` (data will normally be stored in the first shard `shardId-000000000000`)
-- In the `Starting position` section select `Trim horizon` (This will read all the records available in the stream if only posted to the stream once. If the stream has already been used, then it will read data from the last checkpoint.)
-- Select `Get records` to visualise the data that has been send to the stream.
+- In the `Starting position` section, select `Trim horizon` (This will read all the records available in the stream if only posted to the stream once. If the stream has already been used, then it will read data from the last checkpoint.)
+- Select `Get records` to visualise the data that has been sent to the stream.
 
 ![Alt text](README_Images/streaming-0ab336d6fcf7-pin.png)
 ![Alt text](README_Images/streaming-0ab336d6fcf7-geo.png)
@@ -535,7 +535,7 @@ Within the `AWS Kinesis` console:
 
 The Python script [databricks_load_data.py](./databricks/classes/databricks_load_data.py) was created in Databricks. It supplies the following methods:
 
-- Reads in the credentials authentication_credentials.csv file and retrieve the Access Key and Secret Access Key
+- Reads in the credentials authentication_credentials.csv file and retrieves the Access Key and Secret Access Key
 - Reads the streaming data from AWS Kinesis and returns a dictionary of PySpark DataFrames
 - Defines the schema for 'pin' data.
 - Defines the schema for 'geo' data.
@@ -549,7 +549,7 @@ The Python script [databricks_clean_data.py](./databricks/classes/databricks_cle
 - Cleans the geo data in the PySpark DataFrame
 - Cleans the user data in the PySpark DataFrame
 
-The notebook [write_stream_data.ipynb](./databricks/write_stream_data.ipynb) was created in Databricks to read the data from the three streams. It then proceeds to clean the data and then write the data in Delta Tables. This notebook uses the methods from the two previous scripts.
+The notebook [write_stream_data.ipynb](./databricks/write_stream_data.ipynb) was created in Databricks to read the data from the three streams. It then cleans the data and then writes the data in Delta Tables. This notebook uses the methods from the two previous scripts.
 
 ### Write the streaming data to Delta Tables
 
@@ -572,4 +572,4 @@ The delta tables are uploaded within Databricks to Catalogs/hive_metastore/defau
 
 ## Conclusion
 
-This walkthrough details the process to create a real-time streaming data pipeline using AWS Kinesis. It runs through the process of creating Kinesis data streams, and how to create an API to send data to those streams. By utilising databricks, the streams were read, transformed and loaded into Delta tables where further processing can be conducted ready for analysis.
+This walkthrough details the process of creating a real-time streaming data pipeline using AWS Kinesis. It runs through the process of creating Kinesis data streams and how to create an API to send data to those streams. By utilising databricks, the streams were read, transformed and loaded into Delta tables where further processing can be conducted and ready for analysis.
