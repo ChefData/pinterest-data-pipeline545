@@ -1,11 +1,11 @@
 # Walkthrough of Pinterest Data Pipeline Project: Part 5
 
-Pinterest crunches billions of data points every day to decide how to provide more value to their users.
+Pinterest crunches billions of data points daily to decide how to provide more value to its users.
 
-This walkthrough will describe the process taken to emulate Pinterests system of processing data using the AWS Cloud. This walkthrough will explain the following:
+This walkthrough will describe using the AWS Cloud to emulate Pinterest's data processing system. This walkthrough will explain the following:
 
 - [Part 1](Walkthrough_part_1_EC2_Kafka) will describe how to configure a `EC2 Kafka client`
-- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect a `MSK cluster` to a `S3 bucket`
+- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect an `MSK cluster` to an `S3 bucket`
 - [Part 3](Walkthrough_part_3_API) will describe how to configure an `API` in `API Gateway`
 - [Part 4](Walkthrough_part_4_ETL_Databricks) will describe how to read, clean and query data on `Databricks`
 - [Part 5](Walkthrough_part_5_Airflow) will describe how to orchestrate `Databricks` Workloads on `MWAA`
@@ -41,11 +41,11 @@ This walkthrough will describe the process taken to emulate Pinterests system of
 
 Apache Airflow is an open-source platform designed for orchestrating complex workflows and data processing pipelines. Airflow provides a way to programmatically author, schedule, and monitor workflows. Workflows in Airflow are represented as Directed Acyclic Graphs (DAGs), where nodes represent tasks and edges define the order of task execution. This allows for a flexible and visual representation of complex workflows.
 
-Airflow includes a scheduler that automates the execution of workflows based on predefined schedules. Users can set up periodic, interval-based, or triggered executions for their workflows. Airflow provides a web-based user interface that offers a graphical representation of DAGs, making it easy for users to visualize, monitor, and troubleshoot their workflows.
+Airflow includes a scheduler that automates the execution of workflows based on predefined schedules. Users can set up periodic, interval-based, or triggered executions for their workflows. Airflow provides a web-based user interface that offers a graphical representation of DAGs, making it easy for users to visualise, monitor, and troubleshoot their workflows.
 
 The DatabricksSubmitRunOperator is an operator in Apache Airflow designed to submit and run jobs on Databricks. This operator allows you to integrate Databricks job execution into Airflow workflows. The primary purpose of this operator is to submit and run jobs on a Databricks workspace. Databricks jobs can include tasks related to data processing, machine learning, or any other computation supported by the Databricks platform.
 
-During this project an Airflow DAG was created that triggered a Databricks Notebook to be run on a specific schedule. This DAG was uploaded to the dags folder in the mwaa-dags-bucket.
+During this project, an Airflow DAG was created that triggered a Databricks Notebook to be run on a specific schedule. This DAG was uploaded to the dags folder in the mwaa-dags-bucket.
 
 ### Amazon MWAA
 
@@ -60,33 +60,33 @@ The following section illustrates how you can set up Airflow and use it to trigg
 
 > [!Note]
 >
-> During this project the AWS account had already been provided with access to a MWAA environment 'Databricks-Airflow-env' and to its S3 bucket 'mwaa-dags-bucket'.
-> Thus, the following were not reqiuired:
+> During this project, the AWS account had already been provided with access to an MWAA environment, 'Databricks-Airflow-env' and to its S3 bucket 'mwaa-dags-bucket'.
+> Thus, the following were not required:
 >
 > - To create an API token in Databricks to connect to the AWS account
 > - To set up the MWAA-Databricks connection
 > - To create the `requirements.txt` file
->   - This informs `MWAA` which python libraries are required to create a Databricks connection.
+>   - This informs `MWAA` which Python libraries are required to create a Databricks connection.
 >   - This `requirements.txt` file will contain: `apache-airflow[databricks]`
 
 ### Setup Databricks jobs
 
-Airflow allows users to define dependencies between tasks, ensuring that tasks are executed in the correct order. Tasks can be set to run sequentially, in parallel, or based on specific conditions. The tasks in Airflow are instances of "operator" class and are implemented as small Python scripts. Since they are simply Python scripts, operators in Airflow can perform many tasks: they can poll for some precondition to be true (also called a sensor) before succeeding, perform ETL directly, or trigger external systems like Databricks.
+Airflow allows users to define dependencies between tasks, ensuring that tasks are executed in the correct order. Tasks can be set to run sequentially, in parallel, or based on specific conditions. The tasks in Airflow are instances of the "operator" class and are implemented as small Python scripts. Since they are simply Python scripts, operators in Airflow can perform many tasks: they can poll for some precondition (also called a sensor) to be true before succeeding, perform ETL directly, or trigger external systems like Databricks.
 
-For this project five notebooks were created in Databricks to experiment with Airflows dependencies between tasks.
+For this project, five notebooks were created in Databricks to experiment with Airflow dependencies between tasks.
 
 - The notebook [airflow_load_data.ipynb](databricks/airflow/airflow_load_data.ipynb) was created to directly load the data from the S3 bucket
 - The notebook [airflow_clean_pin.ipynb](databricks/airflow/airflow_clean_pin.ipynb) was created to clean the df_pin data
 - The notebook [airflow_clean_geo.ipynb](databricks/airflow/airflow_clean_geo.ipynb) was created to clean the df_geo data
 - The notebook [airflow_clean_user.ipynb](databricks/airflow/airflow_clean_user.ipynb) was created to clean the df_user data
-- The notebook [airflow_query_data.ipynb](databricks/airflow/airflow_query_data.ipynb) was created to queary the cleaned data to gain valuable insights
+- The notebook [airflow_query_data.ipynb](databricks/airflow/airflow_query_data.ipynb) was created to query the cleaned data to gain valuable insights
 
-When the workflow is run through the MWAA environment the data will be loaded first, then all three cleaning jobs will be activated, and once the data has been cleaned then the data will be analsised.
+When the workflow is run through the MWAA environment, the data will be loaded first, then all three cleaning jobs will be activated, and once the data has been cleaned, the data will be analysed.
 ![Alt text](README_Images/Airflow_Graph.png)
 
 ### Create a DAG
 
-The AWS account was granted permissions to upload and update the DAG `0ab336d6fcf7_dag` from the following file [0ab336d6fcf7_dag.py](../0ab336d6fcf7_dag.py) to the S3 bucket `mwaa-dags-bucket/dags/`. This DAG will run a Databricks Notebook on a daily schedule.
+The AWS account was granted permission to upload and update the DAG `0ab336d6fcf7_dag` from the following file [0ab336d6fcf7_dag.py](../0ab336d6fcf7_dag.py) to the S3 bucket `mwaa-dags-bucket/dags/`. This DAG will run a Databricks Notebook on a daily schedule.
 
 The file [0ab336d6fcf7_dag.py](../databricks/0ab336d6fcf7_dag.py) is essentially a script DAG which constructs three `DatabricksSubmitRunOperator` tasks and then sets the dependency at the end.
 
@@ -113,7 +113,7 @@ In the `MWAA` console
 - Click `Open Airflow UI`
 ![Alt text](README_Images/MWAA_Airflow_environments.png)
 
-- Once uploaded to the `DAGs` folder, the new DAG will be avaliable in the Airflow UI on the MWAA environment, under `paused DAGs`.
+- Once uploaded to the `DAGs` folder, the new DAG will be available in the Airflow UI on the MWAA environment under `paused DAGs`.
 ![Alt text](README_Images/MWAA_Airflow_folder.png)
 
 - In order to manually trigger the DAG, it will first have to be unpaused.
@@ -123,11 +123,11 @@ In the `MWAA` console
 
 - Coloured blocks show the status of the `DatabricksSubmitRunOperator`.
   - A successful run will be shown with green blocks.
-  - Hover over the blocks to gain more insight into protential errors.
+  - Hover over the blocks to gain more insight into potential errors.
 
 The batch data has now been uploaded, cleaned and then sent to AWS MWAA for further processing to orchestrate the data workflow.
 
-Further details about the workflow can be seen in the tabs within the Airflow UI, such as a calendar and a gantt chart.
+Further details about the workflow can be seen in the tabs within the Airflow UI, such as a calendar and a Gantt chart.
 ![Alt text](README_Images/Airflow_Calendar.png)
 ![Alt text](README_Images/Airflow_Gantt.png)
 
@@ -141,4 +141,4 @@ Overall, this Pinterest Data Pipeline Project provides a comprehensive guide for
 
 In conclusion, this walkthrough has detailed the comprehensive process of emulating Pinterest's data processing system through batch processing using the AWS Cloud. The project involves configuring an EC2 Kafka client, connecting an MSK cluster to an S3 bucket, setting up an API in API Gateway, reading, cleaning, and querying data on Databricks, and setting up workflows in Airflow to trigger Databricks jobs.
 
-Batch processing, as elucidated in the walkthrough, is a crucial data processing technique that involves collecting, processing, and storing data in scheduled intervals. Pinterest strategically employs batch processing in scenarios where immediate responses are not critical, enabling efficient resource utilization, scalability, and systematic data management.
+Batch processing, as elucidated in the walkthrough, is a crucial data processing technique that involves collecting, processing, and storing data in scheduled intervals. Pinterest strategically employs batch processing in scenarios where immediate responses are not critical, enabling efficient resource utilisation, scalability, and systematic data management.
