@@ -1,11 +1,11 @@
 # Walkthrough of Pinterest Data Pipeline Project: Part 1
 
-Pinterest crunches billions of data points every day to decide how to provide more value to their users.
+Pinterest crunches billions of data points daily to decide how to provide more value to its users.
 
-This walkthrough will describe the process taken to emulate Pinterests system of processing data using the AWS Cloud. This walkthrough will explain the following:
+This walkthrough will describe using the AWS Cloud to emulate Pinterest's data processing system. This walkthrough will explain the following:
 
 - [Part 1](Walkthrough_part_1_EC2_Kafka) will describe how to configure a `EC2 Kafka client`
-- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect a `MSK cluster` to a `S3 bucket`
+- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect an `MSK cluster` to an `S3 bucket`
 - [Part 3](Walkthrough_part_3_API) will describe how to configure an `API` in `API Gateway`
 - [Part 4](Walkthrough_part_4_ETL_Databricks) will describe how to read, clean and query data on `Databricks`
 - [Part 5](Walkthrough_part_5_Airflow) will describe how to orchestrate `Databricks` Workloads on `MWAA`
@@ -29,9 +29,9 @@ This walkthrough will describe the process taken to emulate Pinterests system of
 
 ## Batch Processing
 
-Batch processing is a data processing technique in which data is collected, processed, and stored in chunks or batches at scheduled intervals. Unlike real-time processing, where data is handled immediately as it arrives, batch processing involves the processing of accumulated data over a specific period. Batch processing is suitable for scenarios where the delay between data collection and processing is acceptable, and real-time responsiveness is not critical. It offers advantages in terms of resource efficiency, scalability, and ease of management for processing large volumes of data in a systematic and controlled manner.
+Batch processing is a technique in which collected data is processed and stored in chunks or batches at scheduled intervals. Unlike real-time processing, where data is handled as it arrives, batch processing involves processing accumulated data over a specific period. Batch processing is suitable for scenarios where the delay between data collection and processing is acceptable, and real-time responsiveness is not critical. It offers advantages in terms of resource efficiency, scalability, and ease of management for processing large volumes of data systematically and controlled.
 
-Data is collected over a predefined time period, such as hourly, daily, or weekly intervals. Once a batch of data is collected, it is processed as a group. Processing often involves running predefined operations or tasks on the entire batch. Common tasks include sorting, filtering, aggregating, and transforming the data. Batch processing is typically scheduled to run at specific times, often during non-peak hours to minimize impact on system resources. Batch processing is resource-efficient as it allows the system to process data in large volumes without the need for real-time responsiveness. Once processing is complete, the results are typically stored or outputted to a destination, such as a database, data warehouse, or another file. Output data may be used for reporting, analysis, or other downstream processes.
+Data is collected over a predefined period, such as hourly, daily, or weekly intervals. Once a batch of data is gathered, it is processed as a group. Processing often involves running predefined operations or tasks on the entire batch. Typical tasks include sorting, filtering, aggregating, and transforming the data. Batch processing is typically scheduled to run at specific times, often during non-peak hours, to minimise impact on system resources. Batch processing is resource-efficient as it allows the system to process data in large volumes without the need for real-time responsiveness. Once processing is complete, the results are typically stored or outputted to a destination, such as a database, data warehouse, or another file. Output data may be used for reporting, analysis, or other downstream processes.
 
 Pinterest employs batch processing in various aspects of its data analytics and platform optimisation. While real-time streaming is crucial for immediate user interactions and recommendations, batch processing plays a significant role in tasks that can be performed periodically or don't require instant responses.
 
@@ -54,17 +54,17 @@ Batch processing may allow Pinterest to gather large volumes of data, perform co
 
 ### Amazon RDS
 
-Amazon Relational Database Service (Amazon RDS) is a fully managed relational database service provided by Amazon Web Services (AWS). It simplifies the process of setting up, operating, and scaling a relational database in the cloud. RDS supports various popular relational database engines, including MySQL, PostgreSQL, MariaDB, Oracle, and Microsoft SQL Server. Users can choose the database engine that best suits their application requirements. For this project a MySQL database engine was used.
+Amazon Relational Database Service (Amazon RDS) is a fully managed relational database service provided by Amazon Web Services (AWS). It simplifies the process of setting up, operating, and scaling a relational database in the cloud. RDS supports various popular relational database engines, including MySQL, PostgreSQL, MariaDB, Oracle, and Microsoft SQL Server. Users can choose the database engine that best suits their application requirements. For this project, a MySQL database engine was used.
 
 Amazon RDS is widely used by developers, businesses, and enterprises to deploy and manage relational databases in a scalable, secure, and cost-effective manner. Its managed nature simplifies many aspects of database administration and allows users to focus on building and optimising their applications.
 
-This project uses a RDS database containing three tables resembling data received by the Pinterest API when a POST request is made by a user uploading data to Pinterest.
+This project uses an RDS database containing three tables resembling data received by the Pinterest API when a POST request is made by a user uploading data to Pinterest.
 
 ### Amazon EC2
 
-Amazon Elastic Compute Cloud (Amazon EC2) is a web service provided by AWS that offers resizable compute capacity in the cloud. EC2 allows users to run virtual servers, known as instances, to host their applications and workloads. EC2 instances are typically accessed using secure shell (SSH) for Linux instances or Remote Desktop Protocol (RDP) for Windows instances. Key pairs are used to securely connect to instances.
+Amazon Elastic Compute Cloud (Amazon EC2) is a web service provided by AWS that offers resizable compute capacity in the cloud. EC2 allows users to run virtual servers, known as instances, to host their applications and workloads. EC2 instances are typically accessed using secure shell (SSH) for Linux instances or Remote Desktop Protocol (RDP) for Windows instances. Key pairs are used to connect to instances securely.
 
-This project uses an Amazon EC2 instance to use as Apache Kafka machine.
+This project uses an Amazon EC2 instance to use as an Apache Kafka machine.
 
 ### Apache Kafka
 
@@ -72,43 +72,43 @@ Apache Kafka is an open-source distributed event streaming platform that is desi
 
 Messages in Kafka are organised into topics, which are logical channels or categories. Kafka follows a publish-subscribe messaging model. Producers publish messages to topics, and consumers subscribe to topics to receive and process those messages. Topics help organise and categorise data flow, allowing for scalable and flexible data distribution. Each message is associated with a topic, and topics are divided into partitions for parallel processing.
 
-While Apache Kafka is primarily designed for real-time streaming and event-driven architectures, it is possible to use it in conjunction with other tools for batch processing scenarios.
+While Apache Kafka is primarily designed for real-time streaming and event-driven architectures, it is possible to use it in conjunction with other tools for batch-processing scenarios.
 
-During this project a topic will be created for each of the three tables in the RDS database. Each topic acts as a logical channel for a specific type of data. The data will be ingested into the Kafka topics, then a batch processing framework (e.g., Apache Spark) will be utilised to consume data from the Kafka topics and process the data in batches. The processed results will be stored in a data lakehouse on Databricks.
+During this project, a topic will be created for each of the three tables in the RDS database. Each topic acts as a logical channel for a specific type of data. The data will be ingested into the Kafka topics, and then a batch processing framework (e.g., Apache Spark) will be utilised to consume data from the Kafka topics and process the data in batches. The processed results will be stored in a data lakehouse on Databricks.
 
 ### AWS IAM
 
-AWS Identity and Access Management (IAM) is a web service provided by AWS that allows you to securely control access to AWS resources. IAM enables management of users, groups, roles, and their corresponding access permissions within the AWS environment. IAM plays a crucial role in ensuring the security of AWS resources by providing a centralised and granular way to manage and control access.
+AWS Identity and Access Management (IAM) is a web service provided by AWS that allows you to control access to AWS resources securely. IAM enables the management of users, groups, roles, and their corresponding access permissions within the AWS environment. IAM plays a crucial role in ensuring the security of AWS resources by providing a centralised and granular way to manage and control access.
 
 This project uses IAM roles and groups to implement the principle of least privilege and follow security best practices in AWS environments to protect all other users.
 
 ## Configure Amazon EC2 instance to use as Apache Kafka machine
 
-The following walkthrough will describe the process to configure an Amazon `EC2` instance to use as an `Apache Kafka` machine.
+The following walkthrough will describe the process of configuring an Amazon `EC2` instance to use as an `Apache Kafka` machine.
 
 ### Setting up permissions
 
 > [!Note]
 >
-> During this project a `key pair parameter` was already created up by the administrator.
+> During this project, a `key pair parameter` was already created by the administrator.
 
 Within the `EC2` console:
 
-- Select `Instances` from the  left hand panel
+- Select `Instances` from the left-hand panel
 - Identify and select the instance with the unique `` as supplied by AiCore.
-- Under the `Details` tab find the `Key pair assigned at launch`
-- For this walkthrough it will be referred to as `KEY_PAIR_NAME`
+- Under the `Details` tab, find the `Key pair assigned at launch`
+- For this walkthrough, it will be referred to as `KEY_PAIR_NAME`
 
 Within the `AWS Parameter Store` console:
 
 - Find the specific `key pair parameter` associated with the EC2 instance
-- Select this `key pair parameter` and under the `Value` field select `Show`. This will reveal the content of the `key pair`
+- Select this `key pair parameter`, and under the `Value` field, select `Show`. This will reveal the content of the `key pair`
 - Copy its entire value (including the `BEGIN` and `END` header)
 
 Within the VSCode:
 
 - Create a `key pair` file locally, which is a file ending in the `.pem` extension. This file will allow you to connect to the EC2 instance
-- Paste in the `key pair parameter` value into the `.pem` file
+- Paste the `key pair parameter` value into the `.pem` file
 - Save the created file using the following naming format (replacing `KEY_PAIR_NAME` as described above): `KEY_PAIR_NAME.pem`
 
 In the local machine terminal:
@@ -121,13 +121,13 @@ In the local machine terminal:
 
 > [!NOTE]
 >
-> The command `chmod` is used to change the ownership and permission. In linux their are 3 types of ownership (`User`, `Group`, `Other`) and 3 types of permission (`Read`, `Write`, `Excute`).
+> The command `chmod` is used to change the ownership and permission. In Linux, there are three types of ownership (`User`, `Group`, `Other`) and three types of permission (`Read`, `Write`, `Execute`).
 >
-> In the command `chmod 400` the 3 digits are associated with:
+> In the command `chmod 400`, the three digits are associated with:
 >
-> - 1st position show ownership of `USER` === Here 4
-> - 2st position show ownership of `GROUP` === Here 0
-> - 3st position show ownership of `OTHER` === Here 0
+> - 1st position shows ownership of `USER` === Here, 4
+> - 2nd position shows ownership of `GROUP` === Here, 0
+> - 3rd position shows ownership of `OTHER` === Here, 0
 >
 > The numbers represent:
 >
@@ -156,11 +156,11 @@ In the local machine terminal:
     ssh -i "/path/to/KEY_PAIR_NAME.pem" ec2-user@public_dns_name
     ```
 
-When accessing the `EC2` client using `SSH` for the first time a message may be encountered about the authenticity of the host. This message is prompted because the `SSH` client does not recognise the remote host and wants to verify its authenticity to ensure secure communication.
+When accessing the `EC2` client using `SSH` for the first time, a message may be encountered about the authenticity of the host. This message is prompted because the `SSH` client does not recognise the remote host and wants to verify its authenticity to ensure secure communication.
 
 Type `yes` to confirm and continue connecting. By doing so, the key fingerprint will be stored in the `SSH` client's `known_hosts` file, and future connections to the same host will not prompt the same message.
 
-If during this process the local machine is logged off the instance, just run the `ssh` command again to reconnect.
+If, during this process, the local machine is logged off the instance, just run the `ssh` command again to reconnect.
 
 ### Set up Kafka on the EC2 instance
 
@@ -201,7 +201,7 @@ To connect to a cluster that uses IAM authentication, follow these additional st
 
 On the client `EC2` machine:
 
-- Inside the `libs` folder download the `IAM MSK authentication` package from Github, using the following command:
+- Inside the `libs` folder, download the `IAM MSK authentication` package from Github using the following command:
 
     ```bash
     cd /home/ec2-user/kafka_2.12-2.8.1/libs
@@ -210,7 +210,7 @@ On the client `EC2` machine:
 
 ### Setting up CLASSPATH environment variable
 
-In order to ensure that the Amazon MSK IAM libraries are easily accessible to the Kafka client, regardless of the location from which commands are executed, the environment variable `CLASSPATH` needs to be setup.
+In order to ensure that the Amazon MSK IAM libraries are easily accessible to the Kafka client, regardless of the location from which commands are executed, the environment variable `CLASSPATH` needs to be set up.
 
 On the client EC2 machine:
 
@@ -244,7 +244,7 @@ On the client `EC2` machine:
     source ~/.bashrc
     ```
 
-- To verify if the `CLASSPATH` environment variable was set properly, use the `echo` command to display its value:
+- To verify if the `CLASSPATH` environment variable was correctly set, use the `echo` command to display its value:
 
     ```bash
     echo $CLASSPATH
@@ -256,14 +256,14 @@ On the client `EC2` machine:
 
 Within the `IAM` console:
 
-- Select `Roles` from the left hand panel
+- Select `Roles` from the left-hand panel
 - Select the desired `ec2-access-role`
 - Note the `ARN` for the role
-- For this walkthrough it will be referred to as `IAM_ARN`
+- For this walkthrough, it will be referred to as `IAM_ARN`
 
 On the client `EC2` machine:
 
-- To configure a Kafka client to use AWS `IAM` for authentication, create a `client.properties` file, using the following command:
+- To configure a Kafka client to use AWS `IAM` for authentication, create a `client.properties` file using the following command:
 
     ```bash
     cd /home/ec2-user/kafka_2.12-2.8.1/bin
