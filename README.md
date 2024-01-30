@@ -1,6 +1,6 @@
 # Pinterest Data Pipeline Project
 
-Pinterest is a visual discovery platform and social commerce network. Building on AWS storage and compute solutions, Pinterest uses sophisticated machine learning engines to deliver personalised content to its users. Pinterest hosts billions of images for over 450 million users to explore, save, and share as “Pins” to personalised digital inspiration boards.
+Pinterest is a visual discovery platform and social commerce network. Building on AWS storage and compute solutions, Pinterest uses sophisticated machine learning engines to deliver personalised content to its users. Pinterest hosts billions of images for over 450 million users to explore, save, and share as Pins to personalised digital inspiration boards.
 
 Pinterest’s services run on the Amazon Web Services (AWS) Cloud, where Pinterest can scale processing, storage, and analysis of its rapidly increasing data. Amazon Web Services (AWS) is a comprehensive cloud computing platform provided by Amazon. It offers various services, including computing power, storage, databases, machine learning, analytics, content delivery, Internet of Things (IoT), and security.
 
@@ -373,7 +373,7 @@ MIT License
 
 Copyright (c) 2024 Nick Armstrong
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, and to permit persons to whom the software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software") to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, and to permit persons to whom the software is furnished to do so, subject to the following conditions:
 
 The above copyright and permission notice shall be included in all copies or substantial portions of the software.
 
