@@ -348,18 +348,18 @@ Public Methods:
 
 ## Tools Used
 
-- Visual Studio Code: Code editor used for development.
-- Python: Programming language used for the game logic.
+- Visual Studio Code: The code editor used during development.
+- Python: Programming language used for the data pipeline.
   - PyYAML: YAML parser and emitter for Python
   - sqlalchemy: Open-source SQL toolkit and object-relational mapper
-  - requests: Python HTTP library allows users to send HTTP requests to a specified URL.
+  - requests: The Python HTTP library allows users to send HTTP requests to a specified URL.
   - Decouple: separates the settings parameters from your source code.
-- Databricks: Databricks is a unified analytics platform designed for big data and machine learning and provides a managed Spark environment with optimised performance and scalability.
-- Git: Version control system for tracking changes in the project.
+Databricks: Databricks is a unified analytics platform designed for big data and machine learning. It provides a managed Spark environment with optimised performance and scalability.
+- Git: A version control system is used to track changes in the project.
 - GitHub: Hosting platform for version control and collaboration.
-- Amazon Web Services: cloud computing services
+- Amazon Web Services: Cloud computing services
 - AiCore: Educational programme for tasks and milestones used for development progression
 
 ## Troubleshooting
 
-If you happen to encounter any issues during the installation or setup process, please open an issue in the repository.
+If you encounter any issues during the installation or setup process, please open an issue in the repository.
