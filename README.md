@@ -1,8 +1,8 @@
 # Pinterest Data Pipeline Project
 
-Pinterest is a visual discovery platform and social commerce network. Building on AWS storage and compute solutions, Pinterest uses sophisticated machine learning engines to deliver personalised content to its users. Pinterest hosts billions of images for over 450 million users to explore, save, and share as Pins to personalised digital inspiration boards.
+Pinterest is a visual discovery platform and social commerce network. Building on Amazon Web Services (AWS) storage and compute solutions, Pinterest uses sophisticated machine learning engines to deliver personalised content to its users. Pinterest hosts billions of images for over 450 million users to explore, save, and share as Pins to personalised digital inspiration boards.
 
-Pinterest’s services run on the Amazon Web Services (AWS) Cloud, where Pinterest can scale processing, storage, and analysis of its rapidly increasing data. Amazon Web Services (AWS) is a comprehensive cloud computing platform provided by Amazon. It offers various services, including computing power, storage, databases, machine learning, analytics, content delivery, Internet of Things (IoT), and security.
+Pinterest’s services run on the AWS Cloud, where Pinterest can scale processing, storage, and analysis of its rapidly increasing data. AWS is a comprehensive cloud computing platform provided by Amazon. It offers various services, including computing power, storage, databases, machine learning, analytics, content delivery, Internet of Things (IoT), and security.
 
 A data pipeline is a systematic and automated process for the efficient and reliable movement, transformation, and management of data from one point to another within a computing environment. It plays a crucial role in modern data-driven organisations by enabling the seamless flow of information across various stages of data processing. Pinterest has a large volume of data from multiple sources. However, raw data is not as valuable as it can be; it must be moved, sorted, filtered, reformatted, and analysed for business intelligence.
 
