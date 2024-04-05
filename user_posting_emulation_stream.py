@@ -1,4 +1,4 @@
-from classes.aws_db_connector import AWSDBConnector
+from classes.data_processor import DataProcessor
 import logging
 
 # Configure the logging module
@@ -11,14 +11,14 @@ if __name__ == "__main__":
         topics_dict: dict = {'pin': 'pinterest_data', 'geo': 'geolocation_data', 'user': 'user_data'}
         
         try:
-            connector = AWSDBConnector(topics_dict)
+            connector = DataProcessor(topics_dict)
             logging.info('Working')
             connector.run_infinite_post_data_loop(streaming=True)
         except KeyboardInterrupt:
             # Gracefully handle KeyboardInterrupt (Ctrl+C)
             logging.info('KeyboardInterrupt: Stopping the data processing loop.')
         except Exception as connector_error:
-            logging.error(f"Error during AWSDBConnector initialisation: {connector_error}")
+            logging.error(f"Error during DataProcessor initialisation: {connector_error}")
         finally:
             logging.info('Exiting the script')
 
