@@ -33,31 +33,47 @@ This project aims to provide hands-on experience setting up and managing a data 
 
 ## Tools Used
 
-[<img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg" alt="Python" width="40" height="40"/>](https://www.python.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/pandas/pandas-original.svg" alt="Pandas" width="40" height="40"/>](https://pandas.pydata.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/numpy/numpy-original.svg" alt="Numpy" width="40" height="40"/>](https://numpy.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg" alt="VScode" width="40" height="40"/>](https://code.visualstudio.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original.svg" alt="Jupyter" width="40" height="40"/>](https://jupyter.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" alt="Git" width="40" height="40"/>](https://git-scm.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original.svg" alt="Postgresql" width="40" height="40"/>](https://www.postgresql.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" width="40" height="40"/>](https://aws.amazon.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/anaconda/anaconda-original.svg" alt="Anaconda" width="40" height="40"/>](https://www.anaconda.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/apacheairflow/apacheairflow-original.svg" alt="Apache Airflow" width="40" height="40"/>](https://airflow.apache.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/apachekafka/apachekafka-original.svg" alt="Apache Kafka" width="40" height="40"/>](https://kafka.apache.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/apachespark/apachespark-original.svg" alt="Apache Spark" width="40" height="40"/>](https://spark.apache.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-original.svg" alt="Bash" width="40" height="40"/>](https://www.gnu.org/software/bash/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" alt="Git" width="40" height="40"/>](https://git-scm.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/github/github-original.svg" alt="GitHub" width="40" height="40"/>](https://github.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/homebrew/homebrew-original.svg" alt="Homebrew" width="40" height="40"/>](https://brew.sh/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/java/java-original.svg" alt="Java" width="40" height="40"/>](https://www.java.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/json/json-original.svg" alt="JSON" width="40" height="40"/>](https://www.json.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original.svg" alt="Jupyter" width="40" height="40"/>](https://jupyter.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/mysql/mysql-original.svg" alt="MySQL" width="40" height="40"/>](https://www.mysql.com/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/sqlalchemy/sqlalchemy-original.svg" alt="SQLAlchemy" width="40" height="40"/>](https://www.sqlalchemy.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/yaml/yaml-original.svg" alt="YAML" width="40" height="40"/>](https://yaml.org/)
-[<img src="https://www.vectorlogo.zone/logos/databricks/databricks-icon.svg" alt="Databricks" width="40" height="40"/>](https://databricks.com/)
+[<img src="https://www.vectorlogo.zone/logos/python/python-icon.svg" alt="Python" width="40" height="40"/>](https://www.python.org/) **Python:** A versatile programming language known for its simplicity and readability, widely used for web development, data analysis, artificial intelligence, and more.
 
-## TODO: change to Prerequisites and move to the beginning
+[<img src="https://github.com/devicons/devicon/blob/master/icons/pandas/pandas-original.svg" alt="Pandas" width="40" height="40"/>](https://pandas.pydata.org/) **Pandas:** A powerful Python library used for data manipulation and analysis, particularly for handling structured data and time series data.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/numpy/numpy-original.svg" alt="Numpy" width="40" height="40"/>](https://numpy.org/) **NumPy:** A fundamental package for scientific computing with Python, providing support for large, multi-dimensional arrays and matrices, along with a collection of mathematical functions to operate on these arrays.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg" alt="VScode" width="40" height="40"/>](https://code.visualstudio.com/) **Visual Studio Code:** A popular, lightweight, and powerful source code editor developed by Microsoft, known for its customizable interface, rich language support, and extensive extension marketplace.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original.svg" alt="Jupyter" width="40" height="40"/>](https://jupyter.org/) **Jupyter:** An open-source web application that allows you to create and share documents containing live code, equations, visualizations, and narrative text, commonly used for data cleaning, transformation, and visualization in data science projects.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" alt="Git" width="40" height="40"/>](https://git-scm.com/) **Git:** A distributed version control system widely used for tracking changes in source code during software development, facilitating collaboration among multiple developers.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original.svg" alt="Postgresql" width="40" height="40"/>](https://www.postgresql.org/) **PostgreSQL:** A powerful, open-source object-relational database system known for its reliability, robustness, and advanced features, commonly used in enterprise and web applications.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" width="40" height="40"/>](https://aws.amazon.com/) **Amazon Web Services (AWS):** A comprehensive, scalable cloud computing platform provided by Amazon, offering a wide range of services including computing power, storage, databases, machine learning, and more.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/anaconda/anaconda-original.svg" alt="Anaconda" width="40" height="40"/>](https://www.anaconda.com/) **Anaconda:** A distribution of the Python and R programming languages for scientific computing, data science, and machine learning, bundled with a collection of pre-installed packages and tools for easy management of environments and dependencies.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/apacheairflow/apacheairflow-original.svg" alt="Apache Airflow" width="40" height="40"/>](https://airflow.apache.org/) **Apache Airflow:** A platform used to programmatically author, schedule, and monitor workflows, allowing for complex data pipelines to be built, managed, and automated.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/apachekafka/apachekafka-original.svg" alt="Apache Kafka" width="40" height="40"/>](https://kafka.apache.org/) **Apache Kafka:** A distributed streaming platform used for building real-time data pipelines and streaming applications, known for its high throughput, fault tolerance, and scalability.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/apachespark/apachespark-original.svg" alt="Apache Spark" width="40" height="40"/>](https://spark.apache.org/) **Apache Spark:** A unified analytics engine for big data processing, providing APIs for batch processing, real-time streaming, machine learning, and graph processing, with built-in support for multiple languages and libraries.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-original.svg" alt="Bash" width="40" height="40"/>](https://www.gnu.org/software/bash/) **Bash:** A Unix shell and command language used for executing commands, scripting, and automating tasks in Unix-like operating systems.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" alt="Git" width="40" height="40"/>](https://git-scm.com/) **GitHub:** A web-based platform for hosting and collaborating on Git repositories, widely used by developers for version control, collaboration, and project management.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/homebrew/homebrew-original.svg" alt="Homebrew" width="40" height="40"/>](https://brew.sh/) **Homebrew:** A package manager for macOS and Linux, enabling users to easily install, update, and manage software packages from the command line.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/java/java-original.svg" alt="Java" width="40" height="40"/>](https://www.java.com/) **Java:** A widely-used, object-oriented programming language known for its portability, performance, and scalability, commonly used for building enterprise applications, mobile apps, and web services.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/json/json-original.svg" alt="JSON" width="40" height="40"/>](https://www.json.org/) **JSON (JavaScript Object Notation):** A lightweight data interchange format used for transmitting data between a server and a web application, commonly used for APIs and configuration files.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/mysql/mysql-original.svg" alt="MySQL" width="40" height="40"/>](https://www.mysql.com/) **MySQL:** An open-source relational database management system known for its reliability, speed, and ease of use, commonly used for web applications, content management systems, and more.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/sqlalchemy/sqlalchemy-original.svg" alt="SQLAlchemy" width="40" height="40"/>](https://www.sqlalchemy.org/) **SQLAlchemy:** A SQL toolkit and Object-Relational Mapping (ORM) library for Python, providing a high-level interface for database interactions and data manipulation, commonly used in web applications and data-driven projects.
+
+[<img src="https://github.com/devicons/devicon/blob/master/icons/yaml/yaml-original.svg" alt="YAML" width="40" height="40"/>](https://yaml.org/) **YAML (YAML Ain't Markup Language):** A human-readable data serialization language used for configuration files and data exchange, known for its simplicity and readability.
+
+[<img src="https://www.vectorlogo.zone/logos/databricks/databricks-icon.svg" alt="Databricks" width="40" height="40"/>](https://databricks.com/) **Databricks:** A unified analytics platform powered by Apache Spark, designed to accelerate innovation by bringing data science, engineering, and business together on a single platform.
 
 - Visual Studio Code: The code editor used during development.
 - Python: Programming language used for the data pipeline.
