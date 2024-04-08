@@ -33,7 +33,32 @@ This project aims to provide hands-on experience setting up and managing a data 
 
 ## Tools Used
 
+https://github.com/gilbarbara/logos/blob/main/logos/aws-api-gateway.svg
+https://github.com/gilbarbara/logos/blob/main/logos/aws-ec2.svg
+https://github.com/gilbarbara/logos/blob/main/logos/aws-iam.svg
+https://github.com/gilbarbara/logos/blob/main/logos/aws-kinesis.svg
+https://github.com/gilbarbara/logos/blob/main/logos/aws-msk.svg
+https://github.com/gilbarbara/logos/blob/main/logos/aws-rds.svg
+https://github.com/gilbarbara/logos/blob/main/logos/aws-s3.svg
+https://github.com/gilbarbara/logos/blob/main/logos/aws-vpc.svg
+
 [<img src="https://github.com/devicons/devicon/blob/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" width="40" height="40"/>](https://aws.amazon.com/) **Amazon Web Services (AWS):** A comprehensive, scalable cloud computing platform provided by Amazon, offering a wide range of services including computing power, storage, databases, machine learning, and more.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-api-gateway.svg" alt="AWS API Gateway" width="40" height="40"/>](https://aws.amazon.com/api-gateway/) **AWS API Gateway:** A fully managed service provided by Amazon Web Services (AWS) for creating, publishing, maintaining, monitoring, and securing APIs at any scale, facilitating the creation of RESTful APIs and WebSocket APIs for backend services.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-ec2.svg" alt="AWS EC2" width="40" height="40"/>](https://aws.amazon.com/ec2/) **AWS EC2:** Elastic Compute Cloud (EC2) is a web service provided by Amazon Web Services (AWS) that allows users to rent virtual computers on which to run their own computer applications, providing scalable computing capacity in the cloud.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-iam.svg" alt="AWS IAM" width="40" height="40"/>](https://aws.amazon.com/iam/) **AWS IAM:** Identity and Access Management (IAM) is a web service provided by Amazon Web Services (AWS) that enables administrators to securely control access to AWS services and resources for users and groups, facilitating secure management of user identities, permissions, and access keys.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-kinesis.svg" alt="AWS Kinesis" width="40" height="40"/>](https://aws.amazon.com/kinesis/) **AWS Kinesis:** Amazon Kinesis is a platform provided by Amazon Web Services (AWS) for real-time data streaming and analytics, allowing users to ingest, process, and analyse large streams of data in real-time to extract insights and take actions.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-msk.svg" alt="AWS MSK" width="40" height="40"/>](https://aws.amazon.com/msk/) **AWS MSK:** Amazon Managed Streaming for Apache Kafka (MSK) is a fully managed service provided by Amazon Web Services (AWS) for building and running applications that use Apache Kafka, facilitating the provisioning, scaling, and management of Apache Kafka clusters without the need for manual setup and configuration.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-rds.svg" alt="AWS RDS" width="40" height="40"/>](https://aws.amazon.com/rds/) **AWS RDS:** Amazon Relational Database Service (RDS) is a web service provided by Amazon Web Services (AWS) that makes it easy to set up, operate, and scale relational databases in the cloud, supporting multiple database engines such as MySQL, PostgreSQL, SQL Server, and more.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-s3.svg" alt="AWS S3" width="40" height="40"/>](https://aws.amazon.com/s3/) **AWS S3:** Amazon Simple Storage Service (S3) is an object storage service provided by Amazon Web Services (AWS) that offers scalable storage for data storage, backup, and recovery, serving as a reliable and cost-effective storage solution for a wide range of use cases.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-vpc.svg" alt="AWS VPC" width="40" height="40"/>](https://aws.amazon.com/vpc/) **AWS VPC:** Amazon Virtual Private Cloud (VPC) is a web service provided by Amazon Web Services (AWS) that allows users to create isolated networks within the AWS cloud, enabling complete control over network configuration, including IP addressing, subnets, route tables, and security settings.
 
 [<img src="https://github.com/devicons/devicon/blob/master/icons/anaconda/anaconda-original.svg" alt="Anaconda" width="40" height="40"/>](https://www.anaconda.com/) **Anaconda:** A distribution of the Python and R programming languages for scientific computing, data science, and machine learning, bundled with a collection of pre-installed packages and tools for easy management of environments and dependencies.
 
