@@ -1,147 +1,102 @@
-# Pinterest Data Pipeline Project
+# AWS Data Pipeline Project
 
-Pinterest is a visual discovery platform and social commerce network. Pinterest hosts billions of images for over 450 million users to explore, save, and share as Pins to personalised digital inspiration boards. Pinterest has a large volume of data from multiple sources. However, raw data is less valuable; it must be moved, sorted, filtered, reformatted, and analysed for business intelligence. Pinterest uses the AWS Data Pipeline to process and move data between different Amazon Web Services (AWS)  compute and storage services and on-premises data sources at specified intervals.
+This data pipeline project emulates a data management system similar to what a large social media platform, such as Pinterest, might use. It provides a practical look into how data can be efficiently collected, processed, and stored in a cloud environment like AWS.
 
-The AWS Cloud offers various services, including computing power, storage, databases, machine learning, analytics, content delivery, Internet of Things (IoT), and security. Building on AWS storage and compute solutions, Pinterest uses sophisticated machine learning engines to deliver personalised content to its users.
-
-A data pipeline is a systematic and automated process for the efficient and reliable movement, transformation, and management of data from one point to another within a computing environment. It plays a crucial role in modern data-driven organisations by enabling the seamless flow of information across various stages of data processing. A data pipeline includes multiple technologies to verify, summarise, and find patterns in data to inform business decisions. Well-organised data pipelines support various big data projects, such as visualisations, exploratory data analyses, and machine learning tasks. 
-
-## Table of Contents
-
-- [Description of the project](#description-of-the-project)
-  - [Aim of the project](#aim-of-the-project)
-- [Installation instructions](#installation-instructions)
-- [Usage instructions](#usage-instructions)
-  - [Environment Setup](#environment-setup)
-  - [Credential Setup](#credential-setup)
-  - [Project Navigation](#project-navigation)
-- [Classes and Methods](#classes-and-methods)
-  - [RDSDBConnector](#rdsdbconnector)
-  - [APICommunicator](#apicommunicator)
-  - [AWSDBConnector](#awsdbconnector)
-  - [S3DataLoader](#s3dataloader)
-  - [DataCleaning](#datacleaning)
-- [File structure of the project](#file-structure-of-the-project)
-- [Technologies Used](#technologies-used)
-- [Troubleshooting](#troubleshooting)
-
-## Description of the project
-
-Pinterest crunches billions of data points daily to decide how to provide more value to its users. This project has been designed to emulate this system using AWS Cloud infrastructure.
-
-### Aim of the project
-
-The aim of this project is as follows:
-
-- To develop an end-to-end data processing pipeline hosted on AWS based on Pinterest’s experimental processing pipeline
-- To develop an API using AWS API Gateway and integrating with AWS MSK and MSK Connect for data distribution to an S3 data lake
-- To extract batch data from AWS S3 and transform it in Databricks using pySpark
-- To use AWS MWAA to orchestrate Databricks Workloads
-- To implement real-time data streaming via AWS Kinesis and conduct near real-time analysis using a Spark cluster on Databricks
-
-The project uses an RDS database containing three tables resembling data received by the Pinterest API when a POST request is made by a user uploading data to Pinterest:
-
-- pinterest_data contains data about posts being updated on Pinterest
-- geolocation_data contains data about the geolocation of each Pinterest post found in pinterest_data
-- user_data contains data about the user that has uploaded each post found in pinterest_data
-
-The data within these tables will emulate Pinterest’s data pipeline.
+## Architecture Design
 
 ![Alt text](README_Images/pinterest_data_pipeline.png)
 
+## Project Navigation
+
+The wiki supplies six project walkthrough documents detailing the process of emulating the Pinterest system of processing data using the AWS Cloud. These walkthroughs will explain the following:
+
+#TODO: Create a wiki
+
+- [Part 1](Walkthrough_part_1_EC2_Kafka_Client) will describe how to configure a `EC2 Kafka client`.
+- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect an `MSK cluster` to an `S3 bucket`.
+- [Part 3](Walkthrough_part_3_API) will describe configuring an `API` in `API Gateway`.
+- [Part 4](Walkthrough_part_4_ETL_Databricks) will describe how to read, clean and query data on `Databricks`.
+- [Part 5](Walkthrough_part_5_Airflow) will describe how to orchestrate `Databricks` Workloads on `MWAA`.
+- [Part 6](Walkthrough_part_6_Streaming) will describe how to create data streams using `Kinesis Data Streams`.
+
+## Aim of the project
+
+This project aims to provide hands-on experience setting up and managing a data pipeline. It offers insights into how large-scale applications like Pinterest handle vast amounts of data, ensuring it's processed efficiently and stored securely. The aim is to create a robust data pipeline that enables us to:
+
+- **Data Emulation**: Develop a script that retrieves data from an Amazon RDS to effectively emulate the process of posting data as it would occur on a platform like Pinterest.
+- **Data Processing with Kafka**: Implement Apache Kafka to process the influx of data efficiently, ensuring smooth data flow and scalability.
+- **Data Storage in S3**: Utilise Amazon S3 buckets to securely store processed data and easily access it for future analysis.
+- **API Integration for Data Streaming**: Develop an API to facilitate data streaming into the Kafka cluster and for data distribution to an S3 data lake.
+- **Data Analysis in Databricks**: To extract batch data from AWS S3 and transform it in Databricks using pySpark, and to conduct comprehensive batch analysis on the stored Pinterest data
+- **Workflow Orchestration with MWAA**: Employ Managed Workflows for Apache Airflow (MWAA) to orchestrate complex data workflows using Directed Acyclic Graphs (DAGs), which enhances the automation and monitoring of the data pipeline.
+- **Real-time Data Handling with Kinesis**: Integrate AWS Kinesis Data Streams to extend the pipeline's capabilities for real-time data management using a Spark cluster on Databricks.
+
+## Tools Used
+
+![Pandas](<https://github.com/devicons/devicon/blob/master/icons/pandas/pandas-original.svg> =40x40)
+![Numpy](<https://github.com/devicons/devicon/blob/master/icons/numpy/numpy-original.svg> =40x40)
+![VScode](<https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg> =40x40)
+![Jupyter](<https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original.svg> =40x40)
+![Git](<https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg> =40x40)
+![Postgresql](<https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original.svg> =40x40)
+![AWS](<https://github.com/devicons/devicon/blob/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg> =40x40)
+
+#TODO: change to Prerequisites and move to the beginning
+
+- Visual Studio Code: The code editor used during development.
+- Python: Programming language used for the data pipeline.
+  - PyYAML: YAML parser and emitter for Python
+  - sqlalchemy: Open-source SQL toolkit and object-relational mapper
+  - requests: The Python HTTP library allows users to send HTTP requests to a specified URL.
+  - Decouple: separates the settings parameters from your source code.
+- Databricks: Databricks is a unified analytics platform for big data and machine learning. It provides a managed Spark environment with optimised performance and scalability.
+- Git: A version control system used to track changes in the project.
+- GitHub: Hosting platform for version control and collaboration.
+- Amazon Web Services: Cloud computing services
+
+## Technologies Used
+
+[Part 1](Walkthrough_part_1_EC2_Kafka_Client) will give an overview of how this project used [Amazon RDS](Walkthrough_part_1_EC2_Kafka_Client#amazon-rds), [Amazon EC2](Walkthrough_part_1_EC2_Kafka_Client#amazon-ec2), [Apache Kafka](Walkthrough_part_1_EC2_Kafka_Client#apache-kafka), and [AWS IAM](Walkthrough_part_1_EC2_Kafka_Client#aws-iam)
+
+[Part 2](Walkthrough_part_2_MSK_S3) will give an overview of how this project used [Amazon MSK](Walkthrough_part_2_MSK_S3#amazon-msk) and [Amazon S3](Walkthrough_part_2_MSK_S3#amazon-s3)
+
+[Part 3](Walkthrough_part_3_API) will give an overview of how this project used [Amazon API Gateway](Walkthrough_part_3_API#amazon-api-gateway) and [Confluent REST Proxy for Kafka](Walkthrough_part_3_API#confluent-rest-proxy-for-kafka)
+
+[Part 4](Walkthrough_part_4_ETL_Databricks) will give an overview of how this project used [Apache Spark](Walkthrough_part_4_ETL_Databricks#apache-spark) and [Databricks](Walkthrough_part_4_ETL_Databricks#databricks)
+
+[Part 5](Walkthrough_part_5_Airflow) will give an overview of how this project used [Apache Airflow](Walkthrough_part_4_ETL_Databricks#apache-airflow) and [Amazon MWAA](Walkthrough_part_4_ETL_Databricks#amazon-mwaa)
+
+[Part 6](Walkthrough_part_6_Streaming) will give an overview of how this project used [Apache Spark Structured Streaming](Walkthrough_part_6_Streaming#apache-spark-structured-streaming), [Apache Delta Lake](Walkthrough_part_6_Streaming#apache-delta-lake) and [AWS Kinesis](Walkthrough_part_6_Streaming#aws-kinesis)
+
 ## Installation instructions
 
-To use the functionality provided by this project, follow these steps:
+Follow these instructions to set up and install the project on your local machine.
 
-> [!NOTE]
+> [!Prerequisites]
 > Make sure you have the following installed:
 >
 > - A Code editor such as Visual Studio Code
 > - Conda (optional but recommended)
 
-### 1. Clone the Repository
+### Clone Repository
 
 Clone the repository to your local machine using the following:
 
-#### Windows
-
-1. Install [Git](https://git-scm.com/download/win).
-2. Open the command prompt or Git Bash.
-3. Clone the repository to your local machine:
-
-    ```bash
-    git clone https://github.com/ChefData/pinterest-data-pipeline545
-    ```
-
-#### macOS
-
-1. Open the Terminal.
-2. If you don’t have git installed, you can install it using [Homebrew](https://brew.sh/):
-
-    ```bash
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    brew install git
-    ```
-
-3. Clone the repository to your local machine:
-
-    ```bash
-    git clone https://github.com/ChefData/pinterest-data-pipeline545
-    ```
-
-#### Linux: Ubuntu or Debian-based systems
-
-1. Open the terminal.
-2. Install git:
-
-    ```bash
-    sudo apt-get update
-    sudo apt-get install git
-    ```
-
-3. Clone the repository to your local machine:
-
-    ```bash
-    git clone https://github.com/ChefData/pinterest-data-pipeline545
-    ```
-
-#### Linux: Fedora
-
-1. Open the terminal.
-2. Install git:
-
-    ```bash
-    sudo dnf install git
-    ```
-
-3. Clone the repository to your local machine:
-
-    ```bash
-    git clone https://github.com/ChefData/pinterest-data-pipeline545
-    ```
-
-## Usage instructions
-
-> [!NOTE]
-> It is assumed that you are a support engineer at AiCore and have the relevant credentials to download the data that has been stored in the different sources
-
-Follow these instructions to set up and install the project on your local machine.
+```bash
+git clone https://github.com/ChefData/pinterest-data-pipeline545
+```
 
 ### Environment Setup
 
-1. Create a Conda Virtual Environment to isolate the project dependencies (Optional but Recommended)
+The repository supplies a Conda environment configuration to streamline dependency management, enhance reproducibility, isolate dependencies, facilitate environment sharing, and simplify setup for collaborators or users.
 
-    ```bash
-    conda create -n AiCore-Project-PDP -c conda-forge python=3.11 ipykernel sqlalchemy requests pymysql python-decouple PyYAML databricks-connect
-    ```
-
-2. Or import the conda environment from the supplied YAML file
+1. Import the conda environment from the supplied YAML file
 
     ```bash
     conda env create -f AiCore-Project-PDP-env.yaml
     ```
 
-3. Activate the conda virtual environment:
+2. Activate the conda virtual environment:
     - On Windows:
 
         ```bash
@@ -156,7 +111,11 @@ Follow these instructions to set up and install the project on your local machin
 
 ### Credential Setup
 
-1. Create a YAML file containing the RDS database credentials. The YAML file should be structured as follows:
+This project utilises environment variables for a cleaner separation of configuration from application logic, making the code easier to read and maintain. The environment variables contain sensitive information like passwords, API keys, and access tokens. Storing this sensitive information as environment variables, which is ignored in version control using .gitignore, helps to keep this sensitive information out of the public repository, reducing the risk of accidentally exposing sensitive data to unauthorised users.
+
+You must set up three files to help simplify configuration management and enhance security:
+
+1. Create a YAML file within the repository containing the RDS database credentials. The YAML file should be structured as follows:
 
     ```yaml
     HOST: your_host
@@ -166,7 +125,7 @@ Follow these instructions to set up and install the project on your local machin
     PORT: 3306
     ```
 
-2. Create a .env text file in your repository’s root directory in the form:
+2. Create a .env text file in your repository's root directory in the form:
 
     ```env
     # Datebase Credentials
@@ -175,7 +134,7 @@ Follow these instructions to set up and install the project on your local machin
     # AWS IAM Username
     iam_username = <USER_ID>
 
-    # Invoke URL
+    # Invoke URL - This links the scripts to your API endpoint.
     invoke_URL = <INVOKE_URL>
 
     # Deployment Stage
@@ -188,113 +147,67 @@ Follow these instructions to set up and install the project on your local machin
     bootstrap_servers = <BOOTSTRAP_SERVER_STRING>
     ```
 
-3. Create a local key pair file, which ends in the .pem extension. This file will allow you to connect to the EC2 instance. The process of creating this file is detailed in [Walkthrough Part 1 Setting up permissions](Walkthrough_part_1_EC2_Kafka.md#setting-up-permissions)
+3. Create a local key pair file ending in the .pem extension. This file will allow you to connect to the EC2 instance. The wiki details the process of creating this file in [Walkthrough Part 1 Setting up permissions](Walkthrough_part_1_EC2_Kafka.md#setting-up-permissions)
 
 > [!NOTE]
 >
-> In Amazon EC2, a key pair is a secure method of accessing your EC2 instances. It consists of a public key and a corresponding private key. The public key encrypts data that can only be decrypted using the private key. Key pairs are essential for establishing secure remote access to your EC2 instances.
+> In Amazon EC2, a key pair is a secure method of accessing your EC2 instances. It consists of a public key and a corresponding private key. The public key encrypts data that only the private key can decrypt. Key pairs are essential for establishing secure remote access to your EC2 instances.
 >
 > The public key is stored on the instance associated with it, allowing it to authenticate the private key when you attempt to connect. To securely access the EC2 instance after creation, use the private key to authenticate yourself.
 
-## Project Navigation
+#TODO: Resource provisioning
 
-Six project walkthrough documents have been supplied detailing the process taken to emulate the Pinterest system of processing data using the AWS Cloud. These walkthroughs will explain the following:
+## Project Structure
 
-- [Part 1](Walkthrough_part_1_EC2_Kafka) will describe how to configure a `EC2 Kafka client`
-- [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect an `MSK cluster` to an `S3 bucket`
-- [Part 3](Walkthrough_part_3_API) will describe how to configure an `API` in `API Gateway`
-- [Part 4](Walkthrough_part_4_ETL_Databricks) will describe how to read, clean and query data on `Databricks`
-- [Part 5](Walkthrough_part_5_Airflow) will describe how to orchestrate `Databricks` Workloads on `MWAA`
-- [Part 6](Walkthrough_part_6_Streaming) will describe how to create data streams using `Kinesis Data Streams`
+### Key Scripts
 
-## Classes and Methods
+- `streaming_batch.py`: Contains a script that extracts Pinterest data from MySQL database and uploads it to an S3 bucket through an API Gateway that goes through an MSK cluster on an EC2 instance.
+- `streaming_kinesis.py`: Contains a script that streams real-time data to AWS Kinesis
+- `api_communicator.py`: Contains the `APICommunicator` class for communicating with an API and sending data to Kafka topics or Kinesis streams.
+- `data_processor.py`: The `DataProcessor` class is responsible for processing data from various sources and sending it to an API.
+- `rds_db_connector.py`: Contains the `RDSDBConnector` class for connecting to a database, reading credentials from a YAML file, creating a database URL, initialising an SQLAlchemy engine, and performing database operations.
+- `query_batch_data_direct.ipynb`: A script to directly load data from the S3 bucket, clean that data, and query the cleaned data for information.
+- `query_batch_data_mount.ipynb`: A script to mount, clean and query data for information.
+- `write_stream_data.ipynb`: A script to read real-time kinesis data, clean it, and save it in the delta table on Databricks.
+- `databricks_clean_data.py`: Contains the `DataCleaning` class for cleaning data in PySpark DataFrames.
+- `databricks_load_data.py`: Contains the `S3DataLoader` class for loading data from AWS S3 into PySpark DataFrames.
 
-### RDSDBConnector
+### Data Orchestration
 
-A class for connecting to a database, reading credentials from a YAML file, creating a database URL, initialising an SQLAlchemy engine, and performing database operations.
+- `0ab336d6fcf7_dag.py`: A dag file which runs the following notebooks on databricks daily.
 
-Private Methods:
+```mermaid
+graph LR;
+    airflow_load_data.ipynb-->airflow_clean_geo.ipynb;
+    airflow_load_data.ipynb-->airflow_clean_pin.ipynb;
+    airflow_load_data.ipynb-->airflow_clean_user.ipynb;
+    airflow_clean_geo.ipynb-->airflow_query_data.ipynb;
+    airflow_clean_pin.ipynb-->airflow_query_data.ipynb;
+    airflow_clean_user.ipynb-->airflow_query_data.ipynb;
+```
 
-- __init__(self) -> None: Initialises a DatabaseConnector object
-- __read_db_creds(self) -> Dict[str, str]: Reads database credentials from a YAML file.
-- __validate_db_creds(db_creds: Dict[str, str]) -> None: Validates the database credentials.
-- __build_url_object(db_creds: Dict[str, str]) -> URL: Builds a SQLAlchemy URL object from database credentials.
+- `airflow_load_data.ipynb`: A script to mount the S3 bucket onto databricks.
+- `airflow_clean_geo.ipynb`: This script reads JSON files from the mounted S3 bucket, stores the contents as DataFrames and performs cleaning operations.
+- `airflow_clean_pin.ipynb`: A script that reads JSON files from the mounted S3 bucket, stores the contents as DataFrames and performs cleaning operations.
+- `airflow_clean_user.ipynb`: This script reads JSON files from the mounted S3 bucket, stores the contents as DataFrames and performs cleaning operations.
+- `airflow_query_data.ipynb`: A script to query the cleaned data for information.
 
-Protected Methods:
+### Data files
 
-- _init_db_engine(self) -> create_engine: Initialises the database engine.
+The project uses an RDS database containing three tables resembling data received by the Pinterest API when a user makes a POST request by uploading data to Pinterest:
 
-### APICommunicator
+- `pinterest_data`: Contains data about posts which users upload to Pinterest
+- `geolocation_data`: Contains data about the geolocation of each Pinterest post found in pinterest_data
+- `user_data`: Contains data about the user that has uploaded each post found in pinterest_data
 
-A class for communicating with an API and sending data to Kafka topics or Kinesis streams.
+The data within these tables will emulate Pinterest's data pipeline.
 
-Private Methods:
+### File structure of the project
 
-- __init__(self) -> None: Initialises the APICommunicator with the necessary configuration.
-- __make_request_with_retry(method: str, url: str, headers: Dict[str, str], payload: Optional[str]) -> Optional[requests.Response]: Makes an HTTP request to the specified URL with a retry mechanism.
-- __encode_datetime(self, obj: Union[datetime, None]) -> Optional[str]: Encodes a datetime object to its ISO format if not None.
-- __encode_to_json(self, data: Dict) -> str: Encodes a dictionary to a JSON string, handling datetime objects.
-- __send_data_to_api(self, method: str, URL: str, payload_dict: Dict, headers: Dict[str, str], topic_name: str) -> None: Sends data to a specified endpoint through the configured API.
+```text
+AWS Data Pipeline
 
-Protected Methods:
-
-- _send_data_batch_to_api(self, topic_name: str, data: Dict) -> None: Sends data to a specified Kafka topic through the configured API.
-- _send_data_stream_to_api(self, topic_name: str, data: Dict) -> None: Sends data to a specified Kinesis stream through the configured API.
-
-### AWSDBConnector
-
-Class for connecting to a database and sending data to an API.
-
-Private Methods:
-
-- __init__(self, topics_dict: Dict[str, str]) -> None: Initialise the database and API connections.
-- __handle_signal(self, signum: int, frame) -> None: Handle the termination signal.
-- __get_random_row(connection, table_name: str, random_row: int) -> Dict[str, Union[int, str]]: Get a random row from the specified table.
-- __simulate_asynchronous_data_fetching(self) -> None: Introduce a random sleep to simulate asynchronous data fetching.
-- __process_data(self, streaming: bool) -> None: Fetch random rows from different tables and send data to the API.
-
-Public Methods:
-
-- run_infinite_post_data_loop(self, streaming: bool) -> None: Run an infinite loop to simulate continuous data processing.
-
-### S3DataLoader
-
-Class for loading data from AWS S3 into PySpark DataFrames.
-
-Private Methods:
-
-- __init__(self, credentials_path: str, iam_username: str, topics: List[str]): Initialise Spark session and set instance variables
-- __load_aws_keys(self) -> Tuple[str, str, str, str]: Load AWS keys from Delta table.
-- __is_mounted(self) -> bool: Check if the S3 bucket is already mounted.
-- __read_json_files(self, mounted: bool = True) -> Dict[str, DataFrame]: Read JSON files from the S3 bucket into PySpark DataFrames.
-- __read_stream_files(self) -> Dict[str, DataFrame]: Read streaming data from AWS Kinesis and return a dictionary of PySpark DataFrames.
-- __get_pin_schema() -> StructType: Define the 'pin' data schema.
-- __get_geo_schema() -> StructType: Define the 'geo' data schema.
-- __get_user_schema() -> StructType: Define the 'user' data schema.
-
-Public Methods:
-
-- mount_s3_bucket(self) -> None: Mount the S3 bucket if not already mounted.
-- unmount_s3_bucket(self) -> None: Unmount the S3 bucket.
-- display_s3_bucket(self) -> None: Display the contents of the S3 bucket.
-- create_dataframes(self, mounted: bool = True) -> None: Create global DataFrames from JSON files in the S3 bucket.
-- create_stream_dataframes(self) -> None: Process streaming data and create global temporary views of Delta tables.
-- write_stream(self, df: DataFrame) -> None: Write streaming DataFrame to Delta table.
-- clear_delta_tables(self) -> None: Clear Delta table checkpoints.
-
-### DataCleaning
-
-Class for cleaning data in PySpark DataFrames.
-
-Public Methods:
-
-- clean_pin_data(df: DataFrame) -> DataFrame: Clean pin data in the DataFrame.
-- clean_geo_data(df: DataFrame) -> DataFrame: Clean geo data in the DataFrame.
-- clean_user_data(df: DataFrame) -> DataFrame: Clean user data in the DataFrame.
-
-## File structure of the project
-
-```bash
+Local Machine
 .
 ├── USER_ID-key-pair.pem
 ├── AiCore-Project-PDP-env.yaml
@@ -326,39 +239,24 @@ Public Methods:
 │   ├── query_batch_data_direct.ipynb
 │   ├── query_batch_data_mount.ipynb
 │   └── write_stream_data.ipynb
-├── user_posting_emulation_batch.py
-├── user_posting_emulation_stream.py
+├── streaming_batch.py
+├── streaming_kinesis.py
 ├── .gitignore
 └── .env
+
+EC2 Instance
+├── kafka_2.12-2.8.1
+│   ├── bin
+│   │   └── client.properties
+│   └── libs
+│       └── aws-msk-iam-auth-1.1.5-all.jar
+├── kafka-connect-s3
+│   └── confluentinc-kafka-connect-s3-10.0.3.zip
+└── confluent-7.2.0
+    └── etc
+        └── kafka-rest
+            └── kafka-rest.properties
 ```
-
-## Technologies Used
-
-[Part 1](Walkthrough_part_1_EC2_Kafka) will give an overview of how this project used [Amazon RDS](Walkthrough_part_1_EC2_Kafka#amazon-rds), [Amazon EC2](Walkthrough_part_1_EC2_Kafka#amazon-ec2), [Apache Kafka](Walkthrough_part_1_EC2_Kafka#apache-kafka), and [AWS IAM](Walkthrough_part_1_EC2_Kafka#aws-iam)
-
-[Part 2](Walkthrough_part_2_MSK_S3) will give an overview of how this project used [Amazon MSK](Walkthrough_part_2_MSK_S3#amazon-msk) and [Amazon S3](Walkthrough_part_2_MSK_S3#amazon-s3)
-
-[Part 3](Walkthrough_part_3_API) will give an overview of how this project used [Amazon API Gateway](Walkthrough_part_3_API#amazon-api-gateway) and [Confluent REST Proxy for Kafka](Walkthrough_part_3_API#confluent-rest-proxy-for-kafka)
-
-[Part 4](Walkthrough_part_4_ETL_Databricks) will give an overview of how this project used [Apache Spark](Walkthrough_part_4_ETL_Databricks#apache-spark) and [Databricks](Walkthrough_part_4_ETL_Databricks#databricks)
-
-[Part 5](Walkthrough_part_5_Airflow) will give an overview of how this project used [Apache Airflow](Walkthrough_part_4_ETL_Databricks#apache-airflow) and [Amazon MWAA](Walkthrough_part_4_ETL_Databricks#amazon-mwaa)
-
-[Part 6](Walkthrough_part_6_Streaming) will give an overview of how this project used [Apache Spark Structured Streaming](Walkthrough_part_6_Streaming#apache-spark-structured-streaming), [Apache Delta Lake](Walkthrough_part_6_Streaming#apache-delta-lake) and [AWS Kinesis](Walkthrough_part_6_Streaming#aws-kinesis)
-
-## Tools Used
-
-- Visual Studio Code: The code editor used during development.
-- Python: Programming language used for the data pipeline.
-  - PyYAML: YAML parser and emitter for Python
-  - sqlalchemy: Open-source SQL toolkit and object-relational mapper
-  - requests: The Python HTTP library allows users to send HTTP requests to a specified URL.
-  - Decouple: separates the settings parameters from your source code.
-Databricks: Databricks is a unified analytics platform designed for big data and machine learning. It provides a managed Spark environment with optimised performance and scalability.
-- Git: A version control system is used to track changes in the project.
-- GitHub: Hosting platform for version control and collaboration.
-- Amazon Web Services: Cloud computing services
-- AiCore: Educational programme for tasks and milestones used for development progression
 
 ## Troubleshooting
 
