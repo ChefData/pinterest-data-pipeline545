@@ -10,7 +10,7 @@ This data pipeline project emulates a data management system similar to what a l
 
 The wiki supplies six project walkthrough documents detailing the process of emulating the Pinterest system of processing data using the AWS Cloud. These walkthroughs will explain the following:
 
-#TODO: Create a wiki
+## TODO: Create a wiki
 
 - [Part 1](Walkthrough_part_1_EC2_Kafka_Client) will describe how to configure a `EC2 Kafka client`.
 - [Part 2](Walkthrough_part_2_MSK_S3) will describe how to connect an `MSK cluster` to an `S3 bucket`.
@@ -33,15 +33,31 @@ This project aims to provide hands-on experience setting up and managing a data 
 
 ## Tools Used
 
-![Pandas](<https://github.com/devicons/devicon/blob/master/icons/pandas/pandas-original.svg> =40x40)
-![Numpy](<https://github.com/devicons/devicon/blob/master/icons/numpy/numpy-original.svg> =40x40)
-![VScode](<https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg> =40x40)
-![Jupyter](<https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original.svg> =40x40)
-![Git](<https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg> =40x40)
-![Postgresql](<https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original.svg> =40x40)
-![AWS](<https://github.com/devicons/devicon/blob/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg> =40x40)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg" alt="Python" width="40" height="40"/>](https://www.python.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/pandas/pandas-original.svg" alt="Pandas" width="40" height="40"/>](https://pandas.pydata.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/numpy/numpy-original.svg" alt="Numpy" width="40" height="40"/>](https://numpy.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg" alt="VScode" width="40" height="40"/>](https://code.visualstudio.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original.svg" alt="Jupyter" width="40" height="40"/>](https://jupyter.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" alt="Git" width="40" height="40"/>](https://git-scm.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original.svg" alt="Postgresql" width="40" height="40"/>](https://www.postgresql.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" width="40" height="40"/>](https://aws.amazon.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/anaconda/anaconda-original.svg" alt="Anaconda" width="40" height="40"/>](https://www.anaconda.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/apacheairflow/apacheairflow-original.svg" alt="Apache Airflow" width="40" height="40"/>](https://airflow.apache.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/apachekafka/apachekafka-original.svg" alt="Apache Kafka" width="40" height="40"/>](https://kafka.apache.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/apachespark/apachespark-original.svg" alt="Apache Spark" width="40" height="40"/>](https://spark.apache.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-original.svg" alt="Bash" width="40" height="40"/>](https://www.gnu.org/software/bash/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/git/git-original.svg" alt="Git" width="40" height="40"/>](https://git-scm.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/github/github-original.svg" alt="GitHub" width="40" height="40"/>](https://github.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/homebrew/homebrew-original.svg" alt="Homebrew" width="40" height="40"/>](https://brew.sh/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/java/java-original.svg" alt="Java" width="40" height="40"/>](https://www.java.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/json/json-original.svg" alt="JSON" width="40" height="40"/>](https://www.json.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original.svg" alt="Jupyter" width="40" height="40"/>](https://jupyter.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/mysql/mysql-original.svg" alt="MySQL" width="40" height="40"/>](https://www.mysql.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/sqlalchemy/sqlalchemy-original.svg" alt="SQLAlchemy" width="40" height="40"/>](https://www.sqlalchemy.org/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg" alt="VScode" width="40" height="40"/>](https://code.visualstudio.com/)
+[<img src="https://github.com/devicons/devicon/blob/master/icons/yaml/yaml-original.svg" alt="YAML" width="40" height="40"/>](https://yaml.org/)
 
-#TODO: change to Prerequisites and move to the beginning
+## TODO: change to Prerequisites and move to the beginning
 
 - Visual Studio Code: The code editor used during development.
 - Python: Programming language used for the data pipeline.
@@ -155,7 +171,7 @@ You must set up three files to help simplify configuration management and enhanc
 >
 > The public key is stored on the instance associated with it, allowing it to authenticate the private key when you attempt to connect. To securely access the EC2 instance after creation, use the private key to authenticate yourself.
 
-#TODO: Resource provisioning
+## TODO: Resource provisioning
 
 ## Project Structure
 
