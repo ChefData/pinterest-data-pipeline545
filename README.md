@@ -55,7 +55,7 @@ This project aims to provide hands-on experience setting up and managing a data 
 [<img src="https://github.com/devicons/devicon/blob/master/icons/mysql/mysql-original.svg" alt="MySQL" width="40" height="40"/>](https://www.mysql.com/)
 [<img src="https://github.com/devicons/devicon/blob/master/icons/sqlalchemy/sqlalchemy-original.svg" alt="SQLAlchemy" width="40" height="40"/>](https://www.sqlalchemy.org/)
 [<img src="https://github.com/devicons/devicon/blob/master/icons/yaml/yaml-original.svg" alt="YAML" width="40" height="40"/>](https://yaml.org/)
-[<img src="https://github.com/devicons/devicon/blob/master/icons/databricks/databricks-original.svg" alt="Databricks" width="40" height="40"/>](https://databricks.com/)
+[<img src="https://www.vectorlogo.zone/logos/databricks/databricks-icon.svg" alt="Databricks" width="40" height="40"/>](https://databricks.com/)
 
 ## TODO: change to Prerequisites and move to the beginning
 
