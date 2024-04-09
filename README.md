@@ -33,15 +33,6 @@ This project aims to provide hands-on experience setting up and managing a data 
 
 ## Tools Used
 
-https://github.com/gilbarbara/logos/blob/main/logos/aws-api-gateway.svg
-https://github.com/gilbarbara/logos/blob/main/logos/aws-ec2.svg
-https://github.com/gilbarbara/logos/blob/main/logos/aws-iam.svg
-https://github.com/gilbarbara/logos/blob/main/logos/aws-kinesis.svg
-https://github.com/gilbarbara/logos/blob/main/logos/aws-msk.svg
-https://github.com/gilbarbara/logos/blob/main/logos/aws-rds.svg
-https://github.com/gilbarbara/logos/blob/main/logos/aws-s3.svg
-https://github.com/gilbarbara/logos/blob/main/logos/aws-vpc.svg
-
 [<img src="https://github.com/devicons/devicon/blob/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" alt="AWS" width="40" height="40"/>](https://aws.amazon.com/) **Amazon Web Services (AWS):** A comprehensive, scalable cloud computing platform provided by Amazon, offering a wide range of services including computing power, storage, databases, machine learning, and more.
 
 [<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-api-gateway.svg" alt="AWS API Gateway" width="40" height="40"/>](https://aws.amazon.com/api-gateway/) **AWS API Gateway:** A fully managed service provided by Amazon Web Services (AWS) for creating, publishing, maintaining, monitoring, and securing APIs at any scale, facilitating the creation of RESTful APIs and WebSocket APIs for backend services.
