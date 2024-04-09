@@ -101,11 +101,11 @@ graph LR;
     data_processor.py-->streaming_kinesis.py;
 ```
 
-- `streaming_batch.py`: Contains a script that extracts Pinterest data from MySQL database and uploads it to an S3 bucket through an API Gateway that goes through an MSK cluster on an EC2 instance.
-- `streaming_kinesis.py`: Contains a script that streams real-time data to AWS Kinesis
+- `rds_db_connector.py`: Contains the `RDSDBConnector` class for connecting to a database, reading credentials from a YAML file, creating a database URL, initialising an SQLAlchemy engine, and performing database operations.
 - `api_communicator.py`: Contains the `APICommunicator` class for communicating with an API and sending data to Kafka topics or Kinesis streams.
 - `data_processor.py`: The `DataProcessor` class is responsible for processing data from various sources and sending it to an API.
-- `rds_db_connector.py`: Contains the `RDSDBConnector` class for connecting to a database, reading credentials from a YAML file, creating a database URL, initialising an SQLAlchemy engine, and performing database operations.
+- `streaming_batch.py`: Contains a script that extracts Pinterest data from MySQL database and uploads it to an S3 bucket through an API Gateway that goes through an MSK cluster on an EC2 instance.
+- `streaming_kinesis.py`: Contains a script that streams real-time data to AWS Kinesis
 
 ### Spark Scripts
 
@@ -119,11 +119,11 @@ graph LR;
     databricks_clean_data.py-->write_stream_data.ipynb;
 ```
 
+- `databricks_load_data.py`: Contains the `S3DataLoader` class for loading data from AWS S3 into PySpark DataFrames.
+- `databricks_clean_data.py`: Contains the `DataCleaning` class for cleaning data in PySpark DataFrames.
 - `query_batch_data_direct.ipynb`: A script to directly load data from the S3 bucket, clean that data, and query the cleaned data for information.
 - `query_batch_data_mount.ipynb`: A script to mount, clean and query data for information.
 - `write_stream_data.ipynb`: A script to read real-time kinesis data, clean it, and save it in the delta table on Databricks.
-- `databricks_clean_data.py`: Contains the `DataCleaning` class for cleaning data in PySpark DataFrames.
-- `databricks_load_data.py`: Contains the `S3DataLoader` class for loading data from AWS S3 into PySpark DataFrames.
 
 ### Data Orchestration
 
