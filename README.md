@@ -49,8 +49,6 @@ This project aims to provide hands-on experience setting up and managing a data 
 
 [<img src="https://github.com/gilbarbara/logos/blob/main/logos/aws-vpc.svg" alt="AWS VPC" width="40" height="40"/>](https://aws.amazon.com/vpc/) **AWS VPC:** Amazon Virtual Private Cloud (VPC) is a web service provided by Amazon Web Services (AWS) that allows users to create isolated networks within the AWS cloud, enabling complete control over network configuration, including IP addressing, subnets, route tables, and security settings.
 
-[<img src="https://github.com/devicons/devicon/blob/master/icons/anaconda/anaconda-original.svg" alt="Anaconda" width="40" height="40"/>](https://www.anaconda.com/) **Anaconda:** A distribution of the Python and R programming languages for scientific computing, data science, and machine learning, bundled with a collection of pre-installed packages and tools for easy management of environments and dependencies.
-
 [<img src="https://github.com/devicons/devicon/blob/master/icons/apacheairflow/apacheairflow-original.svg" alt="Apache Airflow" width="40" height="40"/>](https://airflow.apache.org/) **Apache Airflow:** A platform used to programmatically author, schedule, and monitor workflows, allowing for complex data pipelines to be built, managed, and automated.
 
 [<img src="https://github.com/devicons/devicon/blob/master/icons/apachekafka/apachekafka-original.svg" alt="Apache Kafka" width="40" height="40"/>](https://kafka.apache.org/) **Apache Kafka:** A distributed streaming platform used for building real-time data pipelines and streaming applications, known for its high throughput, fault tolerance, and scalability.
@@ -58,6 +56,8 @@ This project aims to provide hands-on experience setting up and managing a data 
 [<img src="https://github.com/devicons/devicon/blob/master/icons/apachespark/apachespark-original.svg" alt="Apache Spark" width="40" height="40"/>](https://spark.apache.org/) **Apache Spark:** A unified analytics engine for big data processing, providing APIs for batch processing, real-time streaming, machine learning, and graph processing, with built-in support for multiple languages and libraries.
 
 [<img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-original.svg" alt="Bash" width="40" height="40"/>](https://www.gnu.org/software/bash/) **Bash:** A Unix shell and command language used for executing commands, scripting, and automating tasks in Unix-like operating systems.
+
+[<img src="https://github.com/gilbarbara/logos/blob/main/logos/conda.svg" alt="Conda" width="40" height="40"/>](https://conda.io/) **Conda:** Conda is an open-source package management system and environment management system that runs on Windows, macOS, and Linux. It allows users to easily install, run, and manage packages and dependencies for data science, scientific computing, and machine learning projects.
 
 [<img src="https://www.vectorlogo.zone/logos/databricks/databricks-icon.svg" alt="Databricks" width="40" height="40"/>](https://databricks.com/) **Databricks:** A unified analytics platform powered by Apache Spark, designed to accelerate innovation by bringing data science, engineering, and business together on a single platform.
 
@@ -91,13 +91,34 @@ The project uses an RDS database containing three tables resembling data receive
 
 The data within these tables will emulate Pinterest's data pipeline.
 
-### Key Scripts
+### Local Scripts
+
+```mermaid
+graph LR;
+    rds_db_connector.py-->data_processor.py;
+    api_communicator.py-->data_processor.py;
+    data_processor.py-->streaming_batch.py;
+    data_processor.py-->streaming_kinesis.py;
+```
 
 - `streaming_batch.py`: Contains a script that extracts Pinterest data from MySQL database and uploads it to an S3 bucket through an API Gateway that goes through an MSK cluster on an EC2 instance.
 - `streaming_kinesis.py`: Contains a script that streams real-time data to AWS Kinesis
 - `api_communicator.py`: Contains the `APICommunicator` class for communicating with an API and sending data to Kafka topics or Kinesis streams.
 - `data_processor.py`: The `DataProcessor` class is responsible for processing data from various sources and sending it to an API.
 - `rds_db_connector.py`: Contains the `RDSDBConnector` class for connecting to a database, reading credentials from a YAML file, creating a database URL, initialising an SQLAlchemy engine, and performing database operations.
+
+### Spark Scripts
+
+```mermaid
+graph LR;
+    databricks_load_data.py-->query_batch_data_direct.ipynb;
+    databricks_clean_data.py-->query_batch_data_direct.ipynb;
+    databricks_load_data.py-->query_batch_data_mount.ipynb;
+    databricks_clean_data.py-->query_batch_data_mount.ipynb;
+    databricks_load_data.py-->write_stream_data.ipynb;
+    databricks_clean_data.py-->write_stream_data.ipynb;
+```
+
 - `query_batch_data_direct.ipynb`: A script to directly load data from the S3 bucket, clean that data, and query the cleaned data for information.
 - `query_batch_data_mount.ipynb`: A script to mount, clean and query data for information.
 - `write_stream_data.ipynb`: A script to read real-time kinesis data, clean it, and save it in the delta table on Databricks.
