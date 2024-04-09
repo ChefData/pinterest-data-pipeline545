@@ -135,12 +135,6 @@ Local Machine
 ├── AiCore-Project-PDP-env.yaml
 ├── README.md
 ├── README_Images
-├── Walkthrough_part_1_EC2_Kafka_Client.md
-├── Walkthrough_part_2_MSK_S3.md
-├── Walkthrough_part_3_API.md
-├── Walkthrough_part_4_ETL_Databricks.md
-├── Walkthrough_part_5_Airflow.md
-├── Walkthrough_part_6_Streaming.md
 ├── classes
 │   ├── __init__.py
 │   ├── api_communicator.py
