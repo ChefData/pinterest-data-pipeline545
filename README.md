@@ -84,9 +84,9 @@ https://github.com/gilbarbara/logos/blob/main/logos/aws-vpc.svg
 
 [<img src="https://www.vectorlogo.zone/logos/python/python-icon.svg" alt="Python" width="40" height="40"/>](https://www.python.org/) **Python:** A versatile programming language known for its simplicity and readability, widely used for web development, data analysis, artificial intelligence, and more.
 
-[<img src="https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg" alt="VScode" width="40" height="40"/>](https://code.visualstudio.com/) **Visual Studio Code:** A popular, lightweight, and powerful source code editor developed by Microsoft, known for its customizable interface, rich language support, and extensive extension marketplace.
+[<img src="https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg" alt="VScode" width="40" height="40"/>](https://code.visualstudio.com/) **Visual Studio Code:** A popular, lightweight, and powerful source code editor developed by Microsoft, known for its customisable interface, rich language support, and extensive extension marketplace.
 
-[<img src="https://github.com/devicons/devicon/blob/master/icons/yaml/yaml-original.svg" alt="YAML" width="40" height="40"/>](https://yaml.org/) **YAML (YAML Ain't Markup Language):** A human-readable data serialization language used for configuration files and data exchange, known for its simplicity and readability.
+[<img src="https://github.com/devicons/devicon/blob/master/icons/yaml/yaml-original.svg" alt="YAML" width="40" height="40"/>](https://yaml.org/) **YAML (YAML Ain't Markup Language):** A human-readable data serialisation language used for configuration files and data exchange, known for its simplicity and readability.
 
 ## Technologies Used
 
